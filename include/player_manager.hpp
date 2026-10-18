@@ -6,7 +6,7 @@
 struct PlayerManager : Singleton<PlayerManager> {
     // TODO
 
-    Player *method_088DF804(int playerId);
+    Player *getPlayerPtr(int playerId);
 
     PlayerManager();
 };

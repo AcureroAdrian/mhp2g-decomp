@@ -9347,88 +9347,88 @@ rom:0x3274C reloc:MIPS_HI16 symbol:D_game_sub_09CCB238
 rom:0x32750 reloc:MIPS_LO16 symbol:D_game_sub_09CCB238
 rom:0xFB080 reloc:MIPS_HI16 symbol:D_game_sub_09CCB238
 rom:0xFB084 reloc:MIPS_LO16 symbol:D_game_sub_09CCB238
-rom:0x68680 reloc:MIPS_HI16 symbol:D_game_sub_09CCEC60
-rom:0x6868C reloc:MIPS_LO16 symbol:D_game_sub_09CCEC60
-rom:0x6B820 reloc:MIPS_HI16 symbol:D_game_sub_09CD2E20
-rom:0x6B824 reloc:MIPS_LO16 symbol:D_game_sub_09CD2E20
-rom:0x723B4 reloc:MIPS_HI16 symbol:D_game_sub_09CD3F20
-rom:0x723BC reloc:MIPS_LO16 symbol:D_game_sub_09CD3F20
-rom:0x70AD4 reloc:MIPS_HI16 symbol:D_game_sub_09CD87C0
-rom:0x70ADC reloc:MIPS_LO16 symbol:D_game_sub_09CD87C0
-rom:0x70A18 reloc:MIPS_HI16 symbol:D_game_sub_09CD9630
-rom:0x70A1C reloc:MIPS_LO16 symbol:D_game_sub_09CD9630
-rom:0x70A20 reloc:MIPS_HI16 symbol:D_game_sub_09CD9630
-rom:0x70A30 reloc:MIPS_LO16 symbol:D_game_sub_09CD9630
-rom:0x27DAC reloc:MIPS_HI16 symbol:D_game_sub_09CD9EB0
-rom:0x27DB0 reloc:MIPS_LO16 symbol:D_game_sub_09CD9EB0
-rom:0x416D0 reloc:MIPS_HI16 symbol:D_game_sub_09CD9EB0
-rom:0x416D8 reloc:MIPS_LO16 symbol:D_game_sub_09CD9EB0
-rom:0x64180 reloc:MIPS_HI16 symbol:D_game_sub_09CD9EB0
-rom:0x64184 reloc:MIPS_LO16 symbol:D_game_sub_09CD9EB0
-rom:0x641E0 reloc:MIPS_HI16 symbol:D_game_sub_09CD9EB0
-rom:0x641E4 reloc:MIPS_LO16 symbol:D_game_sub_09CD9EB0
-rom:0xCF218 reloc:MIPS_HI16 symbol:D_game_sub_09CDC010
-rom:0xCF21C reloc:MIPS_LO16 symbol:D_game_sub_09CDC010
-rom:0xC8128 reloc:MIPS_HI16 symbol:D_game_sub_09CDF678
-rom:0xC8130 reloc:MIPS_LO16 symbol:D_game_sub_09CDF678
-rom:0xC8678 reloc:MIPS_HI16 symbol:D_game_sub_09CDF678
-rom:0xC867C reloc:MIPS_LO16 symbol:D_game_sub_09CDF678
-rom:0xC86E4 reloc:MIPS_HI16 symbol:D_game_sub_09CDF678
-rom:0xC86E8 reloc:MIPS_LO16 symbol:D_game_sub_09CDF678
-rom:0x41BC8 reloc:MIPS_HI16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x41BCC reloc:MIPS_LO16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x422AC reloc:MIPS_HI16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x422B0 reloc:MIPS_LO16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x54A0C reloc:MIPS_HI16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x54A10 reloc:MIPS_LO16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x687FC reloc:MIPS_HI16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x68800 reloc:MIPS_LO16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0xC8364 reloc:MIPS_HI16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0xC8368 reloc:MIPS_LO16 symbol:D_game_sub_09CDF678 addend:0x4
-rom:0x12BA0 reloc:MIPS_HI16 symbol:D_game_sub_09CDF778
-rom:0x12BA4 reloc:MIPS_LO16 symbol:D_game_sub_09CDF778
-rom:0x69004 reloc:MIPS_HI16 symbol:D_game_sub_09CDF778
-rom:0x69010 reloc:MIPS_LO16 symbol:D_game_sub_09CDF778
-rom:0xCDFE8 reloc:MIPS_HI16 symbol:D_game_sub_09CDF778
-rom:0xCDFEC reloc:MIPS_LO16 symbol:D_game_sub_09CDF778
-rom:0xBC840 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBC844 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBC8EC reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBC8F0 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBC920 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBC924 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBD46C reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBD470 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBD4A0 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBD4A4 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBD6D0 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBD6D4 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBD820 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBD824 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBD8CC reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBD8D0 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xBD900 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xBD904 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xCE5D8 reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xCE5DC reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0xDFFEC reloc:MIPS_HI16 symbol:D_game_sub_09CDF7B8
-rom:0xDFFF0 reloc:MIPS_LO16 symbol:D_game_sub_09CDF7B8
-rom:0x12ADC reloc:MIPS_HI16 symbol:D_game_sub_09CDFF78
-rom:0x12AE0 reloc:MIPS_LO16 symbol:D_game_sub_09CDFF78
-rom:0x12C04 reloc:MIPS_HI16 symbol:D_game_sub_09CDFF78
-rom:0x12C08 reloc:MIPS_LO16 symbol:D_game_sub_09CDFF78
-rom:0x69008 reloc:MIPS_HI16 symbol:D_game_sub_09CDFF78
-rom:0x69018 reloc:MIPS_LO16 symbol:D_game_sub_09CDFF78
-rom:0xCE25C reloc:MIPS_HI16 symbol:D_game_sub_09CDFF78
-rom:0xCE26C reloc:MIPS_LO16 symbol:D_game_sub_09CDFF78
-rom:0x12B28 reloc:MIPS_HI16 symbol:D_game_sub_09CE0190
-rom:0x12B2C reloc:MIPS_LO16 symbol:D_game_sub_09CE0190
-rom:0x12C50 reloc:MIPS_HI16 symbol:D_game_sub_09CE0190
-rom:0x12C54 reloc:MIPS_LO16 symbol:D_game_sub_09CE0190
-rom:0x6900C reloc:MIPS_HI16 symbol:D_game_sub_09CE0190
-rom:0x69020 reloc:MIPS_LO16 symbol:D_game_sub_09CE0190
-rom:0xCE2AC reloc:MIPS_HI16 symbol:D_game_sub_09CE0190
-rom:0xCE2B0 reloc:MIPS_LO16 symbol:D_game_sub_09CE0190
+rom:0x68680 reloc:MIPS_HI16 symbol:rand_stage_tbl__9Gamestage
+rom:0x6868C reloc:MIPS_LO16 symbol:rand_stage_tbl__9Gamestage
+rom:0x6B820 reloc:MIPS_HI16 symbol:Hagi_get_tbl__9Gamestage
+rom:0x6B824 reloc:MIPS_LO16 symbol:Hagi_get_tbl__9Gamestage
+rom:0x723B4 reloc:MIPS_HI16 symbol:em_hagi_type_tbl__9Gamestage
+rom:0x723BC reloc:MIPS_LO16 symbol:em_hagi_type_tbl__9Gamestage
+rom:0x70AD4 reloc:MIPS_HI16 symbol:RemItemSetEX_get_tbl__9Gamestage
+rom:0x70ADC reloc:MIPS_LO16 symbol:RemItemSetEX_get_tbl__9Gamestage
+rom:0x70A18 reloc:MIPS_HI16 symbol:RemItemSetEX_tbl__9Gamestage
+rom:0x70A1C reloc:MIPS_LO16 symbol:RemItemSetEX_tbl__9Gamestage
+rom:0x70A20 reloc:MIPS_HI16 symbol:RemItemSetEX_tbl__9Gamestage
+rom:0x70A30 reloc:MIPS_LO16 symbol:RemItemSetEX_tbl__9Gamestage
+rom:0x27DAC reloc:MIPS_HI16 symbol:stage_world_tbl__9Gamestage
+rom:0x27DB0 reloc:MIPS_LO16 symbol:stage_world_tbl__9Gamestage
+rom:0x416D0 reloc:MIPS_HI16 symbol:stage_world_tbl__9Gamestage
+rom:0x416D8 reloc:MIPS_LO16 symbol:stage_world_tbl__9Gamestage
+rom:0x64180 reloc:MIPS_HI16 symbol:stage_world_tbl__9Gamestage
+rom:0x64184 reloc:MIPS_LO16 symbol:stage_world_tbl__9Gamestage
+rom:0x641E0 reloc:MIPS_HI16 symbol:stage_world_tbl__9Gamestage
+rom:0x641E4 reloc:MIPS_LO16 symbol:stage_world_tbl__9Gamestage
+rom:0xCF218 reloc:MIPS_HI16 symbol:stage_start_tbl__9Gamestage
+rom:0xCF21C reloc:MIPS_LO16 symbol:stage_start_tbl__9Gamestage
+rom:0xC8128 reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage
+rom:0xC8130 reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage
+rom:0xC8678 reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage
+rom:0xC867C reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage
+rom:0xC86E4 reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage
+rom:0xC86E8 reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage
+rom:0x41BC8 reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x41BCC reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x422AC reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x422B0 reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x54A0C reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x54A10 reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x687FC reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x68800 reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0xC8364 reloc:MIPS_HI16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0xC8368 reloc:MIPS_LO16 symbol:map_stage_tbl__9Gamestage addend:0x4
+rom:0x12BA0 reloc:MIPS_HI16 symbol:map_night_to_day_tbl__9Gamestage
+rom:0x12BA4 reloc:MIPS_LO16 symbol:map_night_to_day_tbl__9Gamestage
+rom:0x69004 reloc:MIPS_HI16 symbol:map_night_to_day_tbl__9Gamestage
+rom:0x69010 reloc:MIPS_LO16 symbol:map_night_to_day_tbl__9Gamestage
+rom:0xCDFE8 reloc:MIPS_HI16 symbol:map_night_to_day_tbl__9Gamestage
+rom:0xCDFEC reloc:MIPS_LO16 symbol:map_night_to_day_tbl__9Gamestage
+rom:0xBC840 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBC844 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBC8EC reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBC8F0 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBC920 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBC924 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD46C reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD470 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD4A0 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD4A4 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD6D0 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD6D4 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD820 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD824 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD8CC reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD8D0 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD900 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xBD904 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xCE5D8 reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xCE5DC reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xDFFEC reloc:MIPS_HI16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0xDFFF0 reloc:MIPS_LO16 symbol:Snd_bgm_tbl__9Gamestage
+rom:0x12ADC reloc:MIPS_HI16 symbol:stage_is_night_tbl__9Gamestage
+rom:0x12AE0 reloc:MIPS_LO16 symbol:stage_is_night_tbl__9Gamestage
+rom:0x12C04 reloc:MIPS_HI16 symbol:stage_is_night_tbl__9Gamestage
+rom:0x12C08 reloc:MIPS_LO16 symbol:stage_is_night_tbl__9Gamestage
+rom:0x69008 reloc:MIPS_HI16 symbol:stage_is_night_tbl__9Gamestage
+rom:0x69018 reloc:MIPS_LO16 symbol:stage_is_night_tbl__9Gamestage
+rom:0xCE25C reloc:MIPS_HI16 symbol:stage_is_night_tbl__9Gamestage
+rom:0xCE26C reloc:MIPS_LO16 symbol:stage_is_night_tbl__9Gamestage
+rom:0x12B28 reloc:MIPS_HI16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0x12B2C reloc:MIPS_LO16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0x12C50 reloc:MIPS_HI16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0x12C54 reloc:MIPS_LO16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0x6900C reloc:MIPS_HI16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0x69020 reloc:MIPS_LO16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0xCE2AC reloc:MIPS_HI16 symbol:flip_stage_day_night_tbl__9Gamestage
+rom:0xCE2B0 reloc:MIPS_LO16 symbol:flip_stage_day_night_tbl__9Gamestage
 rom:0x34964 reloc:MIPS_HI16 symbol:"objectPtr__19Singleton<7LbEvent>"
 rom:0x34968 reloc:MIPS_LO16 symbol:"objectPtr__19Singleton<7LbEvent>"
 rom:0x34AB8 reloc:MIPS_HI16 symbol:"objectPtr__19Singleton<7LbEvent>"

@@ -33,7 +33,7 @@ void StageBase::drawStg() {
     emit_world_model(&transform, &pmo->scale);
     for (int i = 0; i < vtable_0x48()->model_commands_length; ++i, ++command) {
         ge::atest(0xFF, command->alpha_threshold, GE_OP_AT_LEAST);
-        if ((command->flags & 1) == 0 || !GameSys::objectPtr->allow_hidden_flag) {
+        if ((command->flags & 1) == 0 || !GameSys::objectPtr->is_demo) {
             if ((command->flags & 4) != 0) {
                 ge::ztest(GE_OP_ALWAYS);
             }
@@ -98,7 +98,7 @@ void StageBase::drawSet() {
     emit_world_model(&transform, &pmo->scale);
     for (int i = 0; i < vtable_0x48()->prop_commands_length; ++i, ++command) {
         ge::atest(0xFF, command->alpha_threshold, GE_OP_AT_LEAST);
-        if ((command->flags & 1) == 0 || !GameSys::objectPtr->allow_hidden_flag) {
+        if ((command->flags & 1) == 0 || !GameSys::objectPtr->is_demo) {
             if ((command->flags & 4) != 0) {
                 ge::ztest(GE_OP_ALWAYS);
             }
@@ -437,7 +437,7 @@ void StageBase::vtable_0x78(pmo *pmo, void *data, u8 mesh_index) {
 
 void StageBase::vtable_0x7C(pmo *pmo, void *data, u8 mesh_index) {
     u8 player_id = GameSys::objectPtr->player_id;
-    Player *p = PlayerManager::objectPtr->method_088DF804(player_id);
+    Player *p = PlayerManager::objectPtr->getPlayerPtr(player_id);
     vtable_0x7C_params *args = (vtable_0x7C_params *)data;
     if (p != 0) {
         if (p->position.x < args->bbox_min.x ||
@@ -504,12 +504,12 @@ void StageBase::vtable_0x88(pmo *pmo, void *data) {
     scaleMatrix(&local_transform, one, one, one);
 
     for (int i = 0; i < args->count; ++i, ++position) {
-        if ((u8)func_eboot_08816E20(Camera::objectPtr, position, args->cutoff) == true) {
+        if (Camera::objectPtr->z_clip_check(position, args->cutoff) == true) {
             setPosition(&local_transform, position->x, position->y, position->z);
             emit_world_model(&local_transform, &pmo->scale);
 
             ScePspFVector4 camera_position;
-            Camera::objectPtr->get_camera_pos(&camera_position);
+            Camera::objectPtr->GetCameraEye(&camera_position);
 
             float d2 = distanceSquared(position, &camera_position);
             if (d2 <= 2250000.0f + args->cutoff * args->cutoff) {
@@ -883,21 +883,21 @@ private: BugDrawFlag();
 };
 
 void StageBase::vtable_0x50() {
-    if (flash_state != 0) {
-        if (flash_state == 1) {
-            if (--flash_frames <= 0) {
-                flash_state = 2;
-                flash_frames = 2;
+    if (flash_flag != 0) {
+        if (flash_flag == 1) {
+            if (--flash_timer <= 0) {
+                flash_flag = 2;
+                flash_timer = 2;
             }
-        } else if (flash_state == 2) {
-            if (--flash_frames <= 0) {
-                flash_state = 3;
-                flash_frames = 0x5A;
+        } else if (flash_flag == 2) {
+            if (--flash_timer <= 0) {
+                flash_flag = 3;
+                flash_timer = 0x5A;
             }
         } else {
-            if (--flash_frames <= 0) {
-                flash_state = 0;
-                flash_frames = 0;
+            if (--flash_timer <= 0) {
+                flash_flag = 0;
+                flash_timer = 0;
             }
         }
     }
@@ -914,8 +914,8 @@ void StageBase::vtable_0x50() {
                     sv_q(&spawn_center, node->position.x, node->position.y + 65.0f, node->position.z, 0.0f);
                     sv_q(&spawn_box, 64.0f, 64.0f, 64.0f, 0.0f);
                     switch (GameSys::objectPtr->stage_id) {
-                        case stages::TOWER_3:
-                        case stages::GREAT_FOREST_N_2: {
+                        case StageId::TOWER_YAMA_AREA_3:
+                        case StageId::GREAT_FOREST_N_AREA_2: {
                             stage_definitions *assets = StageManager::objectPtr->stage->definitions();
                             u32 flags = BugDrawFlag::RANDOM_SPAWN_POSITION;
                             StageManager::objectPtr->Set33_set(flags, assets->bug_mesh_index, &spawn_center, &spawn_box);
@@ -980,7 +980,7 @@ inline u16 atan2s16(float y, float x) {
 }
 
 void StageBase::draw_sky_gradient() {
-    u16 camera_angle = atan2s16(-Camera::objectPtr->position.x, -Camera::objectPtr->position.z);
+    u16 camera_angle = atan2s16(-Camera::objectPtr->viewToWorld.z.x, -Camera::objectPtr->viewToWorld.z.z);
     u16 sun_angle = atan2s16(sky_gradient_origin.x, sky_gradient_origin.z);
     u16 dtheta = sun_angle - camera_angle;
     u16 top = sky_gradient_top;
@@ -1044,7 +1044,7 @@ ScePspUnion32 StageBase::lerp_bgra8888(u8 *a, u8 *b, float t) {
 }
 
 void StageBase::draw_flash() {
-    if (flash_state != 0) {
+    if (flash_flag != 0) {
         ge::vertextype(
             GE_VTYPE_TC_NONE,
             GE_VTYPE_COL_8888,
@@ -1056,13 +1056,13 @@ void StageBase::draw_flash() {
             0,
             true);
         u8 blend_mask;
-        if (flash_state == 1) {
+        if (flash_flag == 1) {
             blend_mask = 0xFF;
             ge::blendfixeda(0xFF, 0xFF, 0xFF);
             ge::blendfixedb(0xFF, 0xFF, 0xFF);
             ge::blendmode(GE_BLENDMODE_MUL_AND_SUBTRACT, GE_SRCBLEND_FIXA, GE_DSTBLEND_FIXB);
-        } else if (flash_state == 2) {
-            blend_mask = 0xFF - (u8)(flash_frames * 127.5f);
+        } else if (flash_flag == 2) {
+            blend_mask = 0xFF - (u8)(flash_timer * 127.5f);
             flash_blank_vdata[1].color.rgba8888 = (blend_mask << 24) | 0x000000;
             flash_blank_vdata[0].color.rgba8888 = (blend_mask << 24) | 0x000000;
             ge::vaddr(&DRAWABLE_WRITE_HEAD, flash_blank_vdata);
@@ -1071,12 +1071,12 @@ void StageBase::draw_flash() {
             ge::blendfixedb(0xFF, 0xFF, 0xFF);
             ge::blendmode(GE_BLENDMODE_MUL_AND_SUBTRACT, GE_SRCBLEND_FIXA, GE_DSTBLEND_FIXB);
         } else {
-            float x = vsin_s(6.2831855f * (((360.0f * (float) ((flash_frames * 0xB6) + 0x7FFF + 0x4001)) / 65536.0f) / 360.0f));
+            float x = vsin_s(6.2831855f * (((360.0f * (float) ((flash_timer * 0xB6) + 0x7FFF + 0x4001)) / 65536.0f) / 360.0f));
             blend_mask = (x + 1.0f) * 255.0f;
             ge::blendmode(GE_BLENDMODE_MUL_AND_ADD, GE_SRCBLEND_SRCALPHA, GE_DSTBLEND_INVSRCALPHA);
         }
 
-        if (flash_state - 1U < 2) {
+        if (flash_flag - 1U < 2) {
             flash_blend_vdata[1].color.rgba8888 = 0xFFFFFFFF;
             flash_blend_vdata[0].color.rgba8888 = 0xFFFFFFFF;
         } else {
@@ -1091,8 +1091,8 @@ void StageBase::draw_flash() {
 }
 
 void StageBase::method_088CEA2C() {
-    flash_state = 0;
-    flash_frames = 0;
+    flash_flag = 0;
+    flash_timer = 0;
 
     flash_blend_vdata[0].z = 0;
     flash_blend_vdata[0].y = 0;

@@ -202,4 +202,8 @@ struct Cockpit : Singleton<Cockpit> {
     bool method_08828D80(int, u16);
     void method_0882F7C4(CockpitMenubox *, int, u8 cursorIndex, u8, int);
     void method_0881A280(u8, u32, u32, u32);
+
+    inline static void Pit_QCC_flag_set() {
+        objectPtr->flags_0x528 |= 0x20;
+    }
 };

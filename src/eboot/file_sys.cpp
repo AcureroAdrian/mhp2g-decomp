@@ -181,7 +181,7 @@ void FileSys::draw_loading_screen() {
                     format_string_id = 0x48;
                     break;
                 }
-                if ((GameSys::objectPtr->is_gallery != 0) && (format_string_id == 0x44)) {
+                if ((GameSys::objectPtr->is_gallery_task != 0) && (format_string_id == 0x44)) {
                     format_string_id = 0x65;
                 }
                 if (format_string_argument_id != 0) {

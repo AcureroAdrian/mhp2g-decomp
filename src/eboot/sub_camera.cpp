@@ -17,27 +17,27 @@ void SubCamera::cam_init(u8 type) {
     cam_sub_impl = 0;
     cam_type = type;
     switch(type) {
-    case SubCameraType::STD:
+    case SubCameraId::STD:
         cam_init_sub_std();
         set_cam_sub(&SubCamera::cam_sub_std);
         break;
-    case SubCameraType::GUNNER:
+    case SubCameraId::GUNNER:
         cam_init_sub_gunner();
         set_cam_sub(&SubCamera::cam_sub_gunner);
         break;
-    case SubCameraType::STG:
+    case SubCameraId::STG:
         cam_init_sub_stg();
         set_cam_sub(&SubCamera::cam_sub_stg);
         break;
-    case SubCameraType::PCHNGR:
+    case SubCameraId::PCHNGR:
         cam_init_sub_pchngr();
         set_cam_sub(&SubCamera::cam_sub_pchngr);
         break;
-    case SubCameraType::PLAYER_EX:
+    case SubCameraId::PLAYER_EX:
         cam_init_sub_playerEX();
         set_cam_sub(&SubCamera::cam_sub_playerEX);
         break;
-    case SubCameraType::DEMO:
+    case SubCameraId::DEMO:
         cam_init_sub_demo();
         set_cam_sub(&SubCamera::cam_sub_demo);
         break;
@@ -64,9 +64,9 @@ void SubCamera::cam_init_sub_std() {
     ScePspVector4 angles;
     ScePspFVector4 tar_offset;
 
-    active_cam_type = 0xFF;
+    current_sub_camera_id = SubCameraId::INVALID_ID;
 
-    if (c->area_cnf->move_type != 0 /* FOLLOW */) {
+    if (c->area_cnf->move_type != CameraAreaMoveType::STD) {
         d->cnf_chs = &cam_cnf_chs;
     } else {
         d->cnf_chs = &c->area_cnf->height;
@@ -149,7 +149,7 @@ void SubCamera::cam_sub_std() {
     ScePspFVector4 dir_sq;
 
     Camera *c = Camera::objectPtr;
-    if (c->current_cam_sub != 0 /* STD */) {
+    if (c->area_sub_camera_id != SubCameraId::STD) {
         isActive = false;
         cam_sub_mode.byte = 0;
         cam_sub_state.byte = 0;
@@ -179,7 +179,7 @@ void SubCamera::cam_sub_std() {
 
     d->goal_fov = d->cnf_chs->fov;
 
-    if (area->move_type != 0 /* FOLLOW */) {
+    if (area->move_type != CameraAreaMoveType::STD) {
         d->cnf_chs = &cam_cnf_chs;
     } else {
         d->cnf_chs = &area->height;
@@ -231,14 +231,14 @@ void SubCamera::cam_sub_std() {
     if (c->wyvern_find_player_flag) {
         d->is_view_blocked = 0;
         d->goal_rotation = pl->em_dir + 0x8000;
-    } else if (active_cam_type != 0xFF) {
-        SubCamera *sc = &c->subCameras[active_cam_type];
-        active_cam_type = 0xFF;
+    } else if (current_sub_camera_id != SubCameraId::INVALID_ID) {
+        SubCamera *sc = &c->subCameras[current_sub_camera_id];
+        current_sub_camera_id = SubCameraId::INVALID_ID;
         float dz = sc->current_position.z; dz -= sc->current_target.z;
         float dx = sc->current_position.x; dx -= sc->current_target.x;
         d->rotation = d->goal_rotation = AarcTan2(dx, dz);
         d->inertia_timer = 1;
-    } else if (c->last_cam_sub != 0 /* STD */ && c->last_cam_sub != 1 /* GUNNER */) {
+    } else if (c->last_sub_camera_id != SubCameraId::STD && c->last_sub_camera_id != SubCameraId::GUNNER) {
         float dz = c->last_position.z; dz -= c->last_target.z;
         float dx = c->last_position.x; dx -= c->last_target.x;
         d->rotation = d->goal_rotation = AarcTan2(c->last_position.x - c->last_target.x, c->last_position.z - c->last_target.z);
@@ -284,10 +284,10 @@ void SubCamera::cam_sub_std() {
         }
     }
 
-    if (c->last_cam_sub == true && !d->is_shoulder_cam) {
+    if (c->last_sub_camera_id == SubCameraId::GUNNER && !d->is_shoulder_cam) {
         Camera_hokan_start(20);
         if (GameSys::objectPtr->options.cameraType != 0 /* TYPE_1 */) {
-            SubVector(&tmp, &c->subCameras[1 /* GUNNER */].current_position, &pl->position);
+            SubVector(&tmp, &c->subCameras[SubCameraId::GUNNER].current_position, &pl->position);
             CameraFollowHeightEntry *e = &d->cnf_chs->entries[1];
             float min_score = 1.0e8f;
             int i, min_index = 0;
@@ -566,7 +566,7 @@ extern ScePspFVector4 D_eboot_08931110;
 
 void SubCamera::cam_sub_gunner() {
     Camera *c = Camera::objectPtr;
-    SubCamera *std = &c->subCameras[0];
+    SubCamera *std = &c->subCameras[SubCameraId::STD];
     StdCameraData *sd = &std->data.std;
     Player *pl = c->player;
     GunnerCameraData *d = &data.gunner;
@@ -622,7 +622,7 @@ void SubCamera::cam_sub_gunner() {
     }
 
     isActive = true;
-    c->current_cam_sub = 1 /* GUNNER */;
+    c->area_sub_camera_id = SubCameraId::GUNNER;
     c->is_std_cam = false;
 
     std_rotation = sd->rotation;
@@ -773,15 +773,15 @@ void SubCamera::cam_sub_stg() {
 
     isActive = false;
 
-    if (c->current_cam_sub != 2 /* STG */) {
+    if (c->area_sub_camera_id != SubCameraId::STG) {
         cam_sub_mode.word = 0;
         return;
     }
 
     area = c->area_cnf;
-    if (area->move_type == 0 /* FOLLOW */) {
+    if (area->move_type == CameraAreaMoveType::STD) {
         cam_sub_mode.word = 0;
-        c->current_cam_sub = 0 /* STD */;
+        c->area_sub_camera_id = SubCameraId::STD;
         return;
     }
 
@@ -793,28 +793,28 @@ void SubCamera::cam_sub_stg() {
         isActive = true;
         cam_sub_state.byte = 0;
         switch (area->move_type) {
-        case 1 /* FIXED */:
+        case CameraAreaMoveType::FIXED_PAN:
             d->position.x = area->pan.camera_position.x;
             d->position.y = area->pan.camera_position.y;
             d->position.z = area->pan.camera_position.z;
             d->position.w = 1.0f;
             GetPanTarget(&d->target, area);
-            d->fov = c->current_fov;
+            d->fov = c->fov;
             break;
-        case 3 /* OFFSET */:
+        case CameraAreaMoveType::OFFSET_PAN:
             d->position.x = pl->position.x + area->pan.camera_position.x;
             d->position.y = pl->position.y + area->pan.camera_position.y;
             d->position.z = pl->position.z + area->pan.camera_position.z;
             d->position.w = 1.0f;
             GetPanTarget(&d->target, area);
-            d->fov = c->current_fov;
+            d->fov = c->fov;
             break;
-        case 2 /* RAIL */:
+        case CameraAreaMoveType::RAIL:
             CamRailMove(&pl->position, false);
             CamRailPoint(&tmp, SplineRValue + c->rail_point.spline, c->rail_point.coord);
             GetRailTarget(&d->target, area, &tmp);
             GetRailCamPos(&d->position, area);
-            d->fov = c->current_fov;
+            d->fov = c->fov;
             break;
         }
         vsub_q(&current_direction, &d->target, &d->position);
@@ -825,7 +825,7 @@ void SubCamera::cam_sub_stg() {
     case 1:
         isActive = true;
         switch (area->move_type) {
-        case 1 /* FIXED */:
+        case CameraAreaMoveType::FIXED_PAN:
             d->position.x = area->pan.camera_position.x;
             d->position.y = area->pan.camera_position.y;
             d->position.z = area->pan.camera_position.z;
@@ -833,7 +833,7 @@ void SubCamera::cam_sub_stg() {
             base_fov = area->pan.fov;
             d->roll = area->pan.roll;
             break;
-        case 3 /* OFFSET */:
+        case CameraAreaMoveType::OFFSET_PAN:
             d->position.x = pl->position.x + area->pan.camera_position.x;
             d->position.y = pl->position.y + area->pan.camera_position.y;
             d->position.z = pl->position.z + area->pan.camera_position.z;
@@ -841,7 +841,7 @@ void SubCamera::cam_sub_stg() {
             base_fov = area->pan.fov;
             d->roll = area->pan.roll;
             break;
-        case 2 /* RAIL */:
+        case CameraAreaMoveType::RAIL:
             rail = &area->rail;
             if (!c->is_changing_area) {
                 CamRailMove(&pl->position, true);
@@ -949,11 +949,11 @@ void SubCamera::cam_sub_pchngr() {
     case 0:
         d->is_variable = false;
         switch (d->pachi_type) {
-        case 0 /* BOWGUN */:
+        case PachiType::BOWGUN:
             if (pl->pch_lock_chk() == true) {
                 return;
             }
-            d->crosshair = 1;
+            d->crosshairs = 1;
             if (pl->pl_scope_chk() == true) {
                 d->is_variable = true;
                 d->min_fov = DEGREES_TO_RADIANS_F(20);
@@ -961,16 +961,16 @@ void SubCamera::cam_sub_pchngr() {
                 d->inv_fov_range = 1.0f / (DEGREES_TO_RADIANS(55) - DEGREES_TO_RADIANS(20));
             }
             break;
-        case 1 /* BINOCULARS */:
-            d->crosshair = 0;
+        case PachiType::BINOCULARS:
+            d->crosshairs = 0;
             d->is_variable = true;
             d->min_fov = DEGREES_TO_RADIANS(30);
             d->max_fov = DEGREES_TO_RADIANS(55);
             d->inv_fov_range = 1.0f / (DEGREES_TO_RADIANS(55) - DEGREES_TO_RADIANS(30));
             break;
-        case 2 /* BALLISTA */:
-        case 3 /* NET_LAUNCHER */:
-            d->crosshair = 0x11;
+        case PachiType::BALLISTA:
+        case PachiType::NET_LAUNCHER:
+            d->crosshairs = 0x11;
             current_fov = DEGREES_TO_RADIANS(45);
             break;
         }
@@ -980,7 +980,7 @@ void SubCamera::cam_sub_pchngr() {
             if (Cockpit::objectPtr->Cockpit_menu_chk() == false) {
                 if ((c->buttons & Ctrl::RIGHT) != 0 || (c->buttons & Ctrl::LEFT) != 0) {
                     float *fov;
-                    if (d->pachi_type == 0 /* BOWGUN */) {
+                    if (d->pachi_type == PachiType::BOWGUN) {
                         fov = &d->bowgun_fov;
                     } else {
                         fov = &d->binoculars_fov;
@@ -1001,27 +1001,27 @@ void SubCamera::cam_sub_pchngr() {
             }
         }
         switch (d->pachi_type) {
-        case 0 /* BOWGUN */:
+        case PachiType::BOWGUN:
             if (((GamePlayer *)pl)->pch_lock_chk() == false) {
                 copy_q(&d->player_position, &pl->position);
-                ScePspFMatrix4 *wmat = pl->get_joint_wmat(14 /* LEFT_HAND */);
+                ScePspFMatrix4 *wmat = pl->get_joint_wmat(PlJointId::LEFT_HAND);
                 flmatCopy(&d->mat, wmat);
                 d->mat.w.y += 20.0f;
             } else {
                 copy_q(&d->player_position, &pl->position);
                 ScePspFMatrix4 *aim = ((GamePlayer *)pl)->pch_aim_mat();
-                ScePspFMatrix4 *wmat = pl->get_joint_wmat(0 /* BASE */);
+                ScePspFMatrix4 *wmat = pl->get_joint_wmat(PlJointId::FLOOR);
                 vmmul_q(&d->mat, aim, wmat);
                 d->mat.w.y += 20.0f;
             }
             current_fov = d->bowgun_fov;
             break;
-        case 1 /* BINOCULARS */:
+        case PachiType::BINOCULARS:
             pachinger_mat(&d->mat, pl->pchngr_pitch, (s16)(pl->rotation.y + 0x8000), &pl->position);
             current_fov = d->binoculars_fov;
             break;
-        case 2 /* BALLISTA */:
-        case 3 /* NET_LAUNCHER */:
+        case PachiType::BALLISTA:
+        case PachiType::NET_LAUNCHER:
             pachinger_mat(&d->mat, pl->pchngr_pitch, (s16)(pl->rotation.y + 0x8000), &pl->position);
             break;
         }
@@ -1047,9 +1047,9 @@ void SubCamera::cam_init_sub_playerEX() {
     current_roll = 0;
     data.playerEX.fishing_cam.state.word = 0;
     data.playerEX.zoom_cam.state.word = 0;
-    data.playerEX.zoom_cam.animationTotalFrames = 15;
-    data.playerEX.zoom_cam.animationState = 0;
-    data.playerEX.zoom_cam.stackSize = 0;
+    data.playerEX.zoom_cam.timer_total = 15;
+    data.playerEX.zoom_cam.operation = 0;
+    data.playerEX.zoom_cam.stack_size = 0;
 }
 
 void SubCamera::cam_sub_playerEX() {
@@ -1229,7 +1229,7 @@ void SubCamera::cam_plEX_fishing(FishingCameraData *d) {
     if (d->state.byte == 0) {
         ++d->state.byte;
         d->stage_unique = pl->stage_unique;
-        if (GameSys::objectPtr->stage_id != stages::SWAMP_N_4) {
+        if (GameSys::objectPtr->stage_id != StageId::SWAMP_N_AREA_4) {
             current_fov = DEGREES_TO_RADIANS(55);
         } else {
             current_fov = DEGREES_TO_RADIANS(50);
@@ -1276,71 +1276,71 @@ bool SubCamera::fish_cam_sub(FishingCameraData *d) {
 void SubCamera::cam_plEX_zoom(ZoomCameraData *d) {
     Camera *c = Camera::objectPtr;
     Player *pl = c->player;
-    u8 type = c->current_cam_sub;
+    u8 type = c->area_sub_camera_id;
     isActive = 0;
 
     SubCamera *s = &c->subCameras[type];
     copy_q(&d->positions[0], &s->current_position);
     copy_q(&d->targets[0], &s->current_target);
-    d->fieldsOfView[0] = s->current_fov;
+    d->fovs[0] = s->current_fov;
 
     switch (d->state.byte) {
     case 0: // push
-        if (d->animationState != 0 /* off */) {
-            if (d->animationState == 1 /* zooming in */) {
-                d->operationFrame = 0;
+        if (d->operation != 0 /* off */) {
+            if (d->operation == 1 /* zooming in */) {
+                d->timer = 0;
             }
             d->state.byte += 1;
-            if (d->stackSize != 0) {
-                copy_q(&d->positions[d->stackSize], &current_position);
-                copy_q(&d->targets[d->stackSize], &current_target);
-                d->fieldsOfView[d->stackSize] = current_fov;
+            if (d->stack_size != 0) {
+                copy_q(&d->positions[d->stack_size], &current_position);
+                copy_q(&d->targets[d->stack_size], &current_target);
+                d->fovs[d->stack_size] = current_fov;
             }
-            d->stackSize++;
+            d->stack_size++;
             break;
         }
         return;
     case 1: // hold
-        if (d->animationState == 3 /* zooming out */) {
+        if (d->operation == 3 /* zooming out */) {
             ++d->state.byte;
-        } else if (d->operationFrame < d->animationTotalFrames && ++d->operationFrame >= d->animationTotalFrames) {
-            d->animationState = 2;
+        } else if (d->timer < d->timer_total && ++d->timer >= d->timer_total) {
+            d->operation = 2;
         }
         break;
     case 2: // pop
-        if (d->operationFrame >= 1) {
-            d->operationFrame--;
+        if (d->timer >= 1) {
+            d->timer--;
         }
-        if (d->animationState == 1 /* zooming in */) {
+        if (d->operation == 1 /* zooming in */) {
             d->state.byte = 1;
-        } else if (d->operationFrame == 0) {
-            if (--d->stackSize != 0) {
+        } else if (d->timer == 0) {
+            if (--d->stack_size != 0) {
                 d->state.byte = 1;
-                d->animationState = 2;
-                d->operationFrame = 15;
-                d->animationTotalFrames = 15;
+                d->operation = 2;
+                d->timer = 15;
+                d->timer_total = 15;
             } else {
                 d->state.byte = 0;
-                d->animationState = 0;
-                d->operationFrame = 0;
+                d->operation = 0;
+                d->timer = 0;
                 return;
             }
         }
         break;
     }
 
-    int i = d->stackSize - 1;
-    float t = zoom_cam_rate(d->operationFrame, d->animationTotalFrames, d->state.byte);
+    int i = d->stack_size - 1;
+    float t = zoom_cam_rate(d->timer, d->timer_total, d->state.byte);
 
     ScePspFVector4 tmp;
-    switch (d->targetTypes[i]) {
+    switch (d->target_types[i]) {
     case 0: // dialog
-        if (d->npcs[i]->pl_type == 4 /* NPC_POOGIE */) {
-            cpInterVector2(&d->direction, &pl->position, &d->npcs[i]->position, 0.5f, 0.5f);
-            d->direction.y += 64.0f;
+        if (d->npcs[i]->pl_type == NpcType::POOGIE) {
+            cpInterVector2(&d->target, &pl->position, &d->npcs[i]->position, 0.5f, 0.5f);
+            d->target.y += 64.0f;
         } else {
-            cpInterVector2(&d->direction, &pl->position, &d->position, 0.5f, 0.5f);
-            d->direction.y += 150.0f;
+            cpInterVector2(&d->target, &pl->position, &d->position, 0.5f, 0.5f);
+            d->target.y += 150.0f;
         }
         copy_q(&current_position, &d->positions[i]);
         break;
@@ -1349,7 +1349,7 @@ void SubCamera::cam_plEX_zoom(ZoomCameraData *d) {
     case 5: // book edit clothing
         if (Camera::objectPtr->enableCameraControls == true) {
             float maxY, minY, minX, maxX;
-            switch (d->targetTypes[i]) {
+            switch (d->target_types[i]) {
             case 1:
             case 5:
                 maxY = 160.0f;
@@ -1364,38 +1364,38 @@ void SubCamera::cam_plEX_zoom(ZoomCameraData *d) {
                 break;
             }
             if (Pad::BUTTONS & Ctrl::UP) {
-                d->yCenters[i] += 2.0f;
-                if (d->yCenters[i] > maxY) {
-                    d->yCenters[i] = maxY;
+                d->y_offsets[i] += 2.0f;
+                if (d->y_offsets[i] > maxY) {
+                    d->y_offsets[i] = maxY;
                 }
             }
             if (Pad::BUTTONS & Ctrl::DOWN) {
-                d->yCenters[i] -= 2.0f;
-                if (d->yCenters[i] < minY) {
-                    d->yCenters[i] = minY;
+                d->y_offsets[i] -= 2.0f;
+                if (d->y_offsets[i] < minY) {
+                    d->y_offsets[i] = minY;
                 }
             }
             if (Pad::BUTTONS & Ctrl::LEFT) {
-                d->zSpacings[i] -= 8.0f;
-                if (d->zSpacings[i] < minX) {
-                    d->zSpacings[i] = minX;
+                d->z_offsets[i] -= 8.0f;
+                if (d->z_offsets[i] < minX) {
+                    d->z_offsets[i] = minX;
                 }
             }
             if (Pad::BUTTONS & Ctrl::RIGHT) {
-                d->zSpacings[i] += 8.0f;
-                if (d->zSpacings[i] > maxX) {
-                    d->zSpacings[i] = maxX;
+                d->z_offsets[i] += 8.0f;
+                if (d->z_offsets[i] > maxX) {
+                    d->z_offsets[i] = maxX;
                 }
             }
         }
         // fallthrough
     case 3: // book edit submenu
-        copy_q(&d->direction, &pl->position);
-        d->direction.y += d->yCenters[i];
-        SubVector(&tmp, &d->positions[i], &d->direction);
+        copy_q(&d->target, &pl->position);
+        d->target.y += d->y_offsets[i];
+        SubVector(&tmp, &d->positions[i], &d->target);
         flvecNormalize(&tmp);
-        vscl_t(&tmp, &tmp, d->zSpacings[i]);
-        vadd_q(&tmp, &d->direction, &tmp);
+        vscl_t(&tmp, &tmp, d->z_offsets[i]);
+        vadd_q(&tmp, &d->target, &tmp);
         cpInterVector(&current_position, &tmp, &d->positions[i], t);
         break;
     case 2: // kitchen table
@@ -1403,8 +1403,8 @@ void SubCamera::cam_plEX_zoom(ZoomCameraData *d) {
         break;
     }
 
-    cpInterVector(&current_target, &d->direction, &d->targets[i], t);
-    current_fov = d->fieldOfView * t + d->fieldsOfView[i] * (1.0f - t);
+    cpInterVector(&current_target, &d->target, &d->targets[i], t);
+    current_fov = d->fov * t + d->fovs[i] * (1.0f - t);
     current_roll = s->current_roll;
     isActive = 1;
 }
@@ -1428,7 +1428,7 @@ int SubCamera::point_camera() {
 
     if (d->is_quest_clear != false
       && (Camera::objectPtr->rising_edge & Ctrl::SELECT) != 0
-      && GameSys::objectPtr->is_gallery == false) {
+      && GameSys::objectPtr->is_gallery_task == false) {
         return 1;
     }
 
@@ -1689,10 +1689,10 @@ void SubCamera::GetRailTarget(ScePspFVector4 *out, CameraAreaCnf *data, ScePspFV
     Camera *c = Camera::objectPtr;
     Player *pl = c->player;
     switch (data->target_type) {
-    case 0:
+    case CameraAreaTargetType::FIXED:
         copy_q(out, in);
         break;
-    case 1: {
+    case CameraAreaTargetType::PLAYER_MODEL_OFFSET: {
         ScePspFVector4 offset;
         clear(&offset, sizeof(offset));
         ScePspFMatrix4 *wmat = &pl->transform;
@@ -1702,7 +1702,7 @@ void SubCamera::GetRailTarget(ScePspFVector4 *out, CameraAreaCnf *data, ScePspFV
         nlCalcPoint(out, &offset, wmat);
         break;
     }
-    case 2: {
+    case CameraAreaTargetType::PLAYER_WORLD_OFFSET: {
         ScePspFVector4 woffset;
         clear(&woffset, sizeof(woffset));
         woffset.x = data->rail.world_offset.x;
@@ -1713,10 +1713,10 @@ void SubCamera::GetRailTarget(ScePspFVector4 *out, CameraAreaCnf *data, ScePspFV
     }
     }
     switch (data->axes) {
-    case 0:
+    case CameraAreaAxes::Y:
         out->y = in->y;
         break;
-    case 1:
+    case CameraAreaAxes::XZ:
         out->x = in->x;
         out->z = in->z;
         break;
@@ -2065,7 +2065,7 @@ int SubCamera::ex_ev_camera() {
 
     if (d->is_quest_clear != false
       && (Camera::objectPtr->rising_edge & Ctrl::SELECT) != 0
-      && GameSys::objectPtr->is_gallery == false) {
+      && GameSys::objectPtr->is_gallery_task == false) {
         return 1;
     }
     int result = 0;
@@ -2146,7 +2146,7 @@ bool SubCamera::ex_ev_cam_sub() {
     d = &data.demo;
     if ((definition->flags & 2) != 0)  {
         ScePspFVector4 camera_pos;
-        c->get_camera_pos(&camera_pos);
+        c->GetCameraEye(&camera_pos);
         copy_q(&d->pos_start, &camera_pos);
     }
     while ((bool)(pc->time >= 0)) {
@@ -2207,7 +2207,7 @@ bool SubCamera::ex_ev_cam_sub() {
 void SubCamera::std_cam_sw_set_sub() {
     Camera *c = Camera::objectPtr;
     StdCameraData *d = &data.std;
-    if (Camera::objectPtr->current_cam_sub == 0 && Camera::objectPtr->subCameras[5].isActive == false) {
+    if (Camera::objectPtr->area_sub_camera_id == CameraAreaMoveType::STD && Camera::objectPtr->subCameras[SubCameraId::DEMO].isActive == false) {
         if (Manual_cam_chk() == true) {
             d->buttons = c->buttons;
             d->rising_edge = c->rising_edge;
@@ -2226,12 +2226,12 @@ void SubCamera::std_cam_sw_set_sub() {
 void SubCamera::GetPanTarget(ScePspFVector4 *out, CameraAreaCnf *data) {
     Player *pl = Camera::objectPtr->player;
     switch (data->target_type) {
-    case 0:
+    case CameraAreaTargetType::FIXED:
         out->x = data->pan.target_position.x;
         out->y = data->pan.target_position.y;
         out->z = data->pan.target_position.z;
         break;
-    case 1: {
+    case CameraAreaTargetType::PLAYER_MODEL_OFFSET: {
         ScePspFVector4 offset;
         ScePspFMatrix4 *wmat = &pl->transform;
         offset.x = data->pan.model_offset.x;
@@ -2241,7 +2241,7 @@ void SubCamera::GetPanTarget(ScePspFVector4 *out, CameraAreaCnf *data) {
         nlCalcPoint(out, &offset, wmat);
         break;
     }
-    case 2:
+    case CameraAreaTargetType::PLAYER_WORLD_OFFSET:
         out->x = pl->position.x + data->pan.world_offset.x;
         out->y = pl->position.y + data->pan.world_offset.y;
         out->z = pl->position.z + data->pan.world_offset.z;
@@ -2249,10 +2249,10 @@ void SubCamera::GetPanTarget(ScePspFVector4 *out, CameraAreaCnf *data) {
         break;
     }
     switch (data->axes) {
-    case 0:
+    case CameraAreaAxes::Y:
         out->y = data->pan.target_position.y;
         break;
-    case 1:
+    case CameraAreaAxes::XZ:
         out->x = data->pan.target_position.x;
         out->z = data->pan.target_position.z;
         break;
@@ -2262,7 +2262,7 @@ void SubCamera::GetPanTarget(ScePspFVector4 *out, CameraAreaCnf *data) {
 float SubCamera::func_eboot_0888CEC0() {
     StdCameraData *d = &data.std;
     ScePspFVector4 hit_pos;
-    if (HitManager::objectPtr->cmGetGroundHitLine(&d->position, &Camera::objectPtr->player->hierarchy.roots[0][20 /* HEAD */].globalPose.w, &hit_pos)) {
+    if (HitManager::objectPtr->cmGetGroundHitLine(&d->position, &Camera::objectPtr->player->hierarchy.roots[0][PlJointId::HEAD].globalPose.w, &hit_pos)) {
         float camera_ground_y = HitManager::objectPtr->GetGroundHit(&d->position);
         float target_ground_y = HitManager::objectPtr->GetGroundHit(&d->target);
         if (camera_ground_y - target_ground_y > 150.0f) {
@@ -2349,16 +2349,15 @@ bool SubCamera::Manual_cam_chk() {
     if (Fishing_cam_chk() != false) {
         return false;
     }
-    if (pl->pl_type == 1 /* B_BOWGUN */ || pl->pl_type == 5 /* B_BOWGUN2 */) {
-        if ((bool)(pl->flags_0x410 & 8 /* WEAPON_DRAWN */) != false && (bool)(pl->attributes & 0x8000 /* SHOULDER_CAM */) == true) {
-            return false;
+    if (pl->pl_type == PlType::HEAVY_BOWGUN || pl->pl_type == PlType::LIGHT_BOWGUN) {
+       if ((bool)(pl->flags_0x410 & 8 /* WEAPON_DRAWN */) != false && (bool)(pl->attributes & 0x8000 /* SHOULDER_CAM */) == true) {            return false;
         }
     }
     return data.std.gun_targeting_state < 0;
 }
 
 bool SubCamera::Fishing_cam_chk() {
-    return Camera::objectPtr->player->method_08865C80(0x80000) != 0;
+    return Camera::objectPtr->player->pl_flag_ck(0x80000) != 0;
 }
 
 bool SubCamera::pl_falldown_status() {
@@ -2407,15 +2406,15 @@ bool SubCamera::pl_falldown_status() {
 u8 SubCamera::PachiTypeCheck() {
     Player *pl = Camera::objectPtr->player;
     if (pl->act_ck(0 /* NORMAL */, 101 /* USE_BINOCULARS */) == true || pl->act_ck(0 /* NORMAL */, 102 /* USE_BINOCULARS_CROUCHING */) == true) {
-        return 1 /* BINOCULARS */;
+        return PachiType::BINOCULARS;
     } else if (pl->Pl_bari_ck() == true) {
-        return 2 /* BALLISTA */;
+        return PachiType::BALLISTA;
     } else if (pl->act_ck(8 /* LOBBY? */, 15 /* NET_LAUNCHER */) == true) {
-        return 3 /* NET_LAUNCHER */;
-    } else if (pl->pl_type == 1 /* B_BOWGUN (heavy bowgun) */ || pl->pl_type == 5 /* B_BOWGUN (light bowgun) */) {
-        return 0 /* BOWGUN */;
+        return PachiType::NET_LAUNCHER;
+    } else if (pl->pl_type == PlType::HEAVY_BOWGUN|| pl->pl_type == PlType::LIGHT_BOWGUN) {
+        return PachiType::BOWGUN;
     } else {
-        return -1;
+        return PachiType::INVALID_TYPE;
     }
 }
 
@@ -2709,7 +2708,7 @@ bool SubCamera::Cam_senkai_chk() {
     if (pl->Pl_senkai_chk() == true) {
         return true;
     }
-    if (pl->pl_type == 10 /* BOW */
+    if (pl->pl_type == PlType::BOW
         && (d->rising_edge & Ctrl::R_TRIGGER)
         && (pl->buttons & Ctrl::R_TRIGGER)
         && (bool)(pl->flags_0x410 & 8 /* WEAPON_DRAWN */) != false
@@ -3126,7 +3125,7 @@ void SubCamera::Pl_OoS_Adj() {
 bool SubCamera::posa_sphere_make(ScePspFVector4 *joint_pos) {
     Player *pl = Camera::objectPtr->player;
 
-    pl->get_joint_pos(joint_pos, 20 /* HEAD */);
+    pl->get_joint_pos(joint_pos, PlJointId::HEAD);
     if (joint_pos->y >= current_position.y) {
         return false;
     }
@@ -3137,7 +3136,7 @@ bool SubCamera::posa_sphere_make(ScePspFVector4 *joint_pos) {
         return true;
     }
 
-    pl->get_joint_pos(joint_pos, 2 /* HIPS */);
+    pl->get_joint_pos(joint_pos, PlJointId::HIPS);
     SubVector(&joint_direction, joint_pos, &current_position);
     if (flvecInnerProduct(&current_direction, &joint_direction) > 0.0f) {
         return true;

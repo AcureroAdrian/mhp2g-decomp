@@ -128,7 +128,7 @@ s16 ItemManager::bagRemove(s16 index) {
 u16 ItemManager::knownMixCount(u8 filter) {
     UserData &userData = GameSys::objectPtr->userData;
 
-    Player *player = PlayerManager::objectPtr->method_088DF804(GameSys::objectPtr->player_id);
+    Player *player = PlayerManager::objectPtr->getPlayerPtr(GameSys::objectPtr->player_id);
 
     if (!filter) {
         // test for alchemy
@@ -224,7 +224,7 @@ bool ItemManager::isMixIngredient(s16 _itemId, bool isItemBox, int filter) {
             case 1:
                 return true;
             case 0:
-                if (canMix(PlayerManager::objectPtr->method_088DF804(GameSys::objectPtr->player_id), mix, isItemBox) == true) {
+                if (canMix(PlayerManager::objectPtr->getPlayerPtr(GameSys::objectPtr->player_id), mix, isItemBox) == true) {
                     return true;
                 }
                 break;
@@ -247,7 +247,7 @@ bool ItemManager::isMixIngredient(s16 _itemId, bool isItemBox, int filter) {
                     case 1:
                         return true;
                     case 0:
-                        if (canMix(PlayerManager::objectPtr->method_088DF804(GameSys::objectPtr->player_id), mix, isItemBox) == true) {
+                        if (canMix(PlayerManager::objectPtr->getPlayerPtr(GameSys::objectPtr->player_id), mix, isItemBox) == true) {
                             return true;
                         }
                         break;
@@ -284,7 +284,7 @@ MixDefinition *ItemManager::findMix(s16 firstMaterialItemId, s16 secondMaterialI
             case 1:
                 return mix;
             case 0:
-                if (canMix(PlayerManager::objectPtr->method_088DF804(GameSys::objectPtr->player_id), mix, isItemBox) == true) {
+                if (canMix(PlayerManager::objectPtr->getPlayerPtr(GameSys::objectPtr->player_id), mix, isItemBox) == true) {
                     return mix;
                 }
                 break;
@@ -301,7 +301,7 @@ MixDefinition *ItemManager::findMix(s16 firstMaterialItemId, s16 secondMaterialI
 
 bool ItemManager::getMixBit(MixDefinition *mix, int flags, bool isItemBox) {
     if ((flags & MixFlag::ALCHEMY) == 0) {
-        if (canMix(PlayerManager::objectPtr->method_088DF804(GameSys::objectPtr->player_id), mix, isItemBox) != true) {
+        if (canMix(PlayerManager::objectPtr->getPlayerPtr(GameSys::objectPtr->player_id), mix, isItemBox) != true) {
             return false;
         }
     }

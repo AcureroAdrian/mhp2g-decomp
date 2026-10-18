@@ -1,9 +1,9 @@
 memcpy = 0x0880CD4C; // type:func
 memset = 0x0880D1C0; // type:func
 sprintf = 0x0880F6B0; // type:func
-func_eboot_08816698 = 0x08816698; // type:func
-func_eboot_08816724 = 0x08816724; // type:func
-func_eboot_08816B24 = 0x08816B24; // type:func
+view_set__6CameraFP14ScePspFVector4P14ScePspFVector4f = 0x08816698; // type:func
+view_set_move__6CameraFv = 0x08816724; // type:func
+last_view_set__6CameraFP14ScePspFVector4P14ScePspFVector4f = 0x08816B24; // type:func
 strlenUcs2__3CCCFPUs = 0x088175B4; // type:func
 func_eboot_0881CE38 = 0x0881CE38; // type:func
 func_eboot_0881CFB0 = 0x0881CFB0; // type:func

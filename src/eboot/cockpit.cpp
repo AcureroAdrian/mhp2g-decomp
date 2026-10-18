@@ -786,18 +786,18 @@ extern u16 D_eboot_089B070C[4];
 
 // draw send item to box
 void Cockpit::method_0882536C(SceBool isLobby) {
-    renderGroup = render_group::GROUP_10;
+    renderGroup = RenderGroup::GROUP_10;
     SystemFont::objectPtr->setLayer(1);
     method_08826600();
 
     if (isLobby == false) {
-        renderGroup = render_group::GROUP_9;
+        renderGroup = RenderGroup::GROUP_9;
         SystemFont::objectPtr->setLayer(0);
         method_08826600();
         // draw quest freeze frame
         method_088259A0();
     }
-    renderGroup = render_group::GROUP_10;
+    renderGroup = RenderGroup::GROUP_10;
     SystemFont::objectPtr->setLayer(1);
     method_08826600();
 
@@ -907,7 +907,7 @@ void Cockpit::method_0882536C(SceBool isLobby) {
     }
 
     if (resultMenuState == 3) {
-        renderGroup = render_group::GROUP_11;
+        renderGroup = RenderGroup::GROUP_11;
         SystemFont::objectPtr->setLayer(2);
         method_08826600();
         method_0881A280(inventoryCursorIndex, 0x8000C040, 0x10, 2);

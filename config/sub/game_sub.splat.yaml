@@ -71,7 +71,7 @@ segments:
   - [0x1b1b8, asmtu, hit]
   - [0x1d818, asmtu, hit_sub0]
   - [0x28ae8, asmtu, hitcheck]
-  - [0x3dac8, asmtu, gamestage]
+  - [0x3dac8, cpp, gamestage]
   - [0x3db18, asmtu, effect_handle]
   - [0x3db70, asmtu, effect_base]
   - [0x3df40, asmtu, effect00]

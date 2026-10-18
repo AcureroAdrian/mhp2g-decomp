@@ -153,8 +153,8 @@ struct StageBase : ModelBase {
     Hierarchy prop_hierarchy;
     u8 unknown_0x330;
     StageLight lights[3];
-    s16 flash_state;
-    s16 flash_frames;
+    s16 flash_flag;
+    s16 flash_timer;
     ScePspFVector3 sky_gradient_origin;
     s16 sky_gradient_top;
     s16 sky_gradient_height; // in 480i scanlines: 448 for full screen height

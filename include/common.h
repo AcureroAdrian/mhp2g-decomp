@@ -61,44 +61,11 @@ inline void *clear(void *dst, u32 size) {
 
 #include "enums.hpp" // IWYU pragma: export
 
-struct render_group {
-    enum {
-        GROUP_0,
-        RESET,
-        GROUP_2,
-        STAGE,
-        GROUP_4,
-        GROUP_5,
-        GROUP_6,
-        GROUP_7,
-        GROUP_8,
-        GROUP_9,
-        GROUP_10,
-        GROUP_11,
-        GROUP_12,
-        GROUP_13,
-        GROUP_14,
-        GROUP_15,
-        GROUP_16,
-        GROUP_17,
-        GROUP_18,
-        GROUP_19,
-        GROUP_COUNT
-    } value;
-private:
-    render_group();
-};
-
-struct stages {
-    enum {
-        GREAT_FOREST_N_2 = 259,
-        GREAT_FOREST_N_7 = 264,
-        TOWER_3 = 130,
-        SWAMP_N_4 = 75,
-    };
-
-private:
-    stages();
+struct PositionAngle {
+    float x;
+    float y;
+    float z;
+    s16 ang;
 };
 
 struct EnemyDetectionData {
@@ -131,7 +98,7 @@ extern struct EnemyData {
     ScePspFVector2 shadowScale;
     float unknown_0x4C;
     void *collisionPtr;
-    u16 unknown_0x54;
+    u16 wall_bit;
     u16 unknown_0x56;
     u32 unknown_0x58;
     u32 flags_0x5C;

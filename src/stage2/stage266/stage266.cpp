@@ -36,7 +36,7 @@ ScePspFVector2 D_stage266_09D5E2C0[3][4] = {
 };
 
 stage_exit D_stage266_09D5E320[1] = {
-    {stages::GREAT_FOREST_N_7, 0, {9600, -6400, 11200}, 800, 5900, {}, {10420, -1, 9150}, {}}
+    {StageId::GREAT_FOREST_N_AREA_7, 0, {9600, -6400, 11200}, 800, 5900, {}, {10420, -1, 9150}, {}}
 };
 
 u8 padding_09D5E354[0xC] = {};

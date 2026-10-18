@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "enemy.hpp"
 #include "singleton.hpp"
 
 struct InventoryEntry {
@@ -116,17 +117,17 @@ struct GameSys : Singleton<GameSys> {
     u8 pad_0x2F[0x390-0x2F];
     InventoryEntry itemBox[32];
     u8 pad_0x410[0x422-0x410];
-    bool allow_hidden_flag;
+    bool is_demo;
     u8 pad_0x423[0x480 - 0x423];
-    bool is_gallery;
+    bool is_gallery_task;
     u8 pad_0x481[0x4A0 - 0x481];
     UserData userData;
     Options options;
     u8 pad_0x6ADE6[0x6AF0C - 0x6ADE6];
     bool flag_0x6AF0C;
     u16 stage_id;
-    u8 mapId;
-    u16 missionId;
+    u8 map_id;
+    u16 mission_id;
     u32 flags_0x6AF14;
     u8 pad_0x6AF18[0x6AF40 - 0x6AF18];
 
@@ -139,9 +140,11 @@ struct GameSys : Singleton<GameSys> {
     char *method_08851448(u16);
     int itemBoxSize();
     bool Game_clear_ck(int);
+    bool Event_flag_ck(u16);
+    u8 em_moto_type_ck(u8);
 
-    inline bool unknownTest() {
-        return GameSys::objectPtr->options.backgroundLoading && !GameSys::objectPtr->is_gallery;
+    inline bool background_load_check() {
+        return GameSys::objectPtr->options.backgroundLoading && !GameSys::objectPtr->is_gallery_task;
     }
 };
 

@@ -102,6 +102,10 @@ struct System : NoInlineConstructorSingleton<System> {
 
     u16 next_index(u32 type);
     void run();
+
+    inline bool Online_ck() {
+        return (bool)(System::objectPtr->wirelessIsOn & 1) != false;
+    }
 };
 
 extern "C" {

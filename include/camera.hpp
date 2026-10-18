@@ -7,9 +7,133 @@
 #include "singleton.hpp"
 #include "player.hpp"
 
-union SubCameraState {
+
+struct DemoId {
+    enum {
+        NONE,
+        PLAYER_COMEBACK,
+        PLAYER_DIE,
+        FORTRESS_PILEBUNKER,
+        CASTLE_SCHRADE_PILEBUNKER,
+        TOWN_PILEBUNKER,
+        BOSS_QUEST_CLEAR,
+        SMALL_MONSTER_QUEST_CLEAR,
+        LARGE_MONSTER_QUEST_CLEAR,
+        MEDIUM_MONSTER_QUEST_CLEAR,
+        FISH_WYVERN,
+        LAOSHAN_LUNG_ESCAPE,
+        FATALIS_ESCAPE,
+        FATALIS_FLYING_ESCAPE,
+        SHEN_GAOREN_ESCAPE,
+        KUSHALA_DAORA_ESCAPE,
+        CHAMELEOS_ESCAPE,
+        LUNASTRA_ESCAPE,
+        AKANTOR_ESCAPE,
+        LAOSHAN_LUNG_QUEST_CLEAR,
+        FATALIS_QUEST_CLEAR,
+        SHEN_GAOREN_QUEST_CLEAR,
+        AKANTOR_QUEST_CLEAR,
+        UKANLOS_QUEST_CLEAR,
+        YAMA_TSUKAMI_QUEST_CLEAR_1,
+        YAMA_TSUKAMI_QUEST_CLEAR_0,
+        RECKLESS_BULLDROME_HUNTER_DEMO,
+        HUNT_DOWN_THE_VELOCIDROME_DEMO,
+        THE_CARNIVOROUS_LEADER_DEMO,
+        JUNGLE_MENACE_DEMO,
+        THE_LAND_SHARK_DEMO,
+        GYPCEROS_VENOMOUS_TERROR_DEMO,
+        THE_LURKING_DESERT_GIANT_DEMO,
+        RAREST_OF_THE_RARE_BEASTS_DEMO,
+        THE_ELDER_DRAGON_OF_WIND_DEMO,
+        SHADOW_IN_THE_SNOW_DEMO,
+        THE_RULER_OF_THE_SNOW_DEMO,
+        WATER_WYVERN_IN_THE_DESERT_DEMO,
+        COMMANDER_IN_THE_FLAMES_DEMO,
+        THE_RUNAWAY_DIABLOS_DEMO,
+        THE_FROZEN_DICTATOR_DEMO,
+        THE_EMPRESS_S_BLAZING_THRONE_DEMO,
+        EMPEROR_OF_FLAME_DEMO,
+        TERROR_OF_THE_GRAVIOS_DEMO,
+        OVERSEER_OF_THE_ANCIENTS_DEMO,
+        THE_LEGENDARY_KIRIN_DEMO,
+        BATTLE_OF_THE_BLOS_DEMO,
+        THE_ELDER_DRAGON_OF_MIST_DEMO,
+        THE_FINAL_INVITATION_DEMO,
+        THE_LONE_BLACK_GARUGA_DEMO,
+        LAOSHAN_LUNG_INTRO,
+        ASHEN_LAOSHAN_LUNG_INTRO,
+        SHEN_GAOREN_INTRO,
+        SINKING_FEELING_DEMO,
+        ABSOLUTE_POWER_DEMO,
+        FATALIS_INTRO,
+        CRIMSON_FATALIS_INTRO,
+        WHITE_FATALIS_INTRO,
+        AKANTOR_INTRO,
+        YAMA_TSUKAMI_INTRO,
+        UKANLOS_INTRO,
+        LAVASIOTH_INTRO,
+        HYPNOCATRICE_INTRO,
+        NARGACUGA_INTRO,
+        TRAINING_BASICS_DEMO,
+        TRAINING_GATHERING_DEMO_1,
+        TRAINING_GATHERING_DEMO_2,
+        TRAINING_GATHERING_DEMO_3,
+        TRAINING_GATHERING_DEMO_4,
+        TRAINING_COMBINING_DEMO,
+        TRAINING_FISHING_DEMO,
+        TRAINING_TRANSPORT_DEMO,
+        FOREST_AND_HILLS_INTRO,
+        DESERT_INTRO,
+        SWAMP_INTRO,
+        VOLCANO_INTRO,
+        JUNGLE_INTRO,
+        SNOWY_MOUNTAINS_INTRO,
+        TOWER_INTRO,
+        GREAT_FOREST_INTRO,
+        POKKE_VILLAGE_INTRO,
+        POKKE_ROOM_INTRO,
+        KITCHEN_DEMO_0x52,
+        KITCHEN_DEMO_0x53,
+        KITCHEN_DEMO_0x54,
+        KITCHEN_DEMO_0x55,
+        KITCHEN_DISMISS_CAT,
+        FARM_BOMB,
+        FARM_FISH,
+        KITCHEN_DEMO_0x59,
+        KITCHEN_NEUTRAL_OR_GOOD_MEAL,
+        KITCHEN_BAD_MEAL,
+        KITCHEN_DEMO_0x5C,
+        TRENYA_DEMO_0x5D,
+        FARM_DEMO_0x5E,
+        KITCHEN_CHANGE_CAT_TYPE,
+        FARM_DEMO_0x60,
+        FARM_DEMO_0x61,
+        FARM_DEMO_0x62,
+        FARM_DEMO_0x63,
+        FARM_DEMO_0x64,
+        FARM_DEMO_0x65,
+        FARM_DEMO_0x66,
+        FARM_DEMO_0x67,
+        FARM_DEMO_0x68,
+        FARM_DEMO_0x69,
+        CLEAR_DEMO_STATE,
+        INVALID_ID = 0xFF,
+    };
+private:
+    DemoId();
+};
+
+union CameraState {
     u32 word;
     u8 byte;
+};
+
+struct CameraQuake {
+    ScePspFVector4 epicenter;
+    bool is_active;
+    u8 magnitude_id;
+    s16 timer;
+    u8 radius_id;
 };
 
 struct UnalignedCameraFollowHeightEntry {
@@ -69,10 +193,59 @@ struct CameraHokanInfo {
     u8 steps;
 };
 
+struct CameraAreaZoneFlag {
+    enum {
+        ENTER = 1 << 0,
+        EXIT = 1 << 1,
+    };
+private:
+    CameraAreaZoneFlag();
+};
+
+struct CameraAreaZone {
+    float vertices[8];
+    ScePspFVector3 position;
+    u8 flags;
+    ScePspFVector3 normal;
+    float height;
+};
+
+struct CameraAreaMoveType {
+    enum {
+        STD,
+        FIXED_PAN,
+        RAIL,
+        OFFSET_PAN,
+    };
+private:
+    CameraAreaMoveType();
+};
+
+struct CameraAreaAxes {
+    enum {
+        Y,
+        XZ,
+        INVALID_AXES,
+    };
+private:
+    CameraAreaAxes();
+};
+
+
+struct CameraAreaTargetType {
+    enum {
+        FIXED,
+        PLAYER_MODEL_OFFSET,
+        PLAYER_WORLD_OFFSET,
+    };
+private:
+    CameraAreaTargetType();
+};
+
 struct CameraAreaCnf {
-    u8 pad_0x0;
-    u8 index;
-    u8 move_type; // 0 = follow, 1 = fixed, 2 = rail, 3 = offset
+    u8 magic[1];
+    u8 id;
+    u8 move_type;
     u8 axes;
     u8 target_type;
     u8 zone_count;
@@ -82,13 +255,37 @@ struct CameraAreaCnf {
     float far_distance;
     float near_fov;
     float far_fov;
-    void *zones;
+    CameraAreaZone *zones;
     CameraHokanInfo *hokan_info;
     union {
         CameraFollowDefinition height;
         CameraPanDefinition pan;
         CameraRailDefinition rail;
+        u8 bytes[0x2E0];
     };
+};
+
+struct CameraAreaList {
+    s32 length;
+    CameraAreaCnf **entries;
+};
+
+struct CameraAreaHeader {
+    u16 version;
+    u16 count;
+    u16 rows;
+    u16 columns;
+    u16 unknown_0x8;
+    u16 unknown_0xA;
+    u32 unknown_0xC;
+    u32 unknown_0x10;
+    u32 unknown_0x14;
+    u32 unknown_0x18;
+    CameraAreaList *index;
+    CameraAreaCnf **cnfs;
+    u32 unknown_0x24;
+    CameraAreaCnf *first;
+    s32 unknown_0x2C;
 };
 
 struct StdCameraData {
@@ -155,6 +352,18 @@ struct StgCameraData {
     s16 rotation;
 };
 
+struct PachiType {
+    enum {
+        BOWGUN,
+        BINOCULARS,
+        BALLISTA,
+        NET_LAUNCHER,
+        INVALID_TYPE = 0xFF,
+    };
+private:
+    PachiType();
+};
+
 struct PchngrCameraData {
     ScePspFMatrix4 mat;
     ScePspFVector4 player_position;
@@ -165,30 +374,30 @@ struct PchngrCameraData {
     float binoculars_fov;
     u32 pad_0x64;
     s8 pachi_type;
-    u8 crosshair;
+    u8 crosshairs;
     u8 is_variable;
 };
 
 struct FishingCameraData {
-    SubCameraState state;
+    CameraState state;
     u32 checkResult;
     void *stage_unique;
 };
 
 struct ZoomCameraData {
-    SubCameraState state;
+    CameraState state;
     Npc *npcs[3];
     ScePspFVector4 position;
-    ScePspFVector4 direction;
-    u8 animationState;
-    u8 targetTypes[3];
-    s16 animationTotalFrames;
-    s16 operationFrame;
-    float yCenters[3];
-    float zSpacings[3];
-    float fieldOfView;
-    int stackSize;
-    float fieldsOfView[3];
+    ScePspFVector4 target;
+    u8 operation;
+    u8 target_types[3];
+    s16 timer_total;
+    s16 timer;
+    float y_offsets[3];
+    float z_offsets[3];
+    float fov;
+    int stack_size;
+    float fovs[3];
     ScePspFVector4 positions[3];
     ScePspFVector4 targets[3];
 };
@@ -311,7 +520,7 @@ union SubCameraData {
     DemoCameraData demo;
 };
 
-struct SubCameraType {
+struct SubCameraId {
     enum {
         STD,
         GUNNER,
@@ -319,9 +528,11 @@ struct SubCameraType {
         PCHNGR,
         PLAYER_EX,
         DEMO,
+        MAX_ID,
+        INVALID_ID = 0xFF,
     };
 private:
-    SubCameraType();
+    SubCameraId();
 };
 
 struct CameraRailPoint {
@@ -342,7 +553,7 @@ struct SubCamera {
 
     SubCamera() {
         unknown_0x90 = 0;
-        active_cam_type = 0;
+        current_sub_camera_id = 0;
     }
     ~SubCamera() {}
 
@@ -360,11 +571,11 @@ struct SubCamera {
     float last_fov;
     u8 unknown_0x90;
     bool isActive;
-    u8 active_cam_type;
+    u8 current_sub_camera_id;
     s16 timer;
     s16 timer_total;
-    SubCameraState cam_sub_mode;
-    SubCameraState cam_sub_state;
+    CameraState cam_sub_mode;
+    CameraState cam_sub_state;
     SubCameraData data;
     mem_fn cam_sub_impl;
     u8 cam_type;
@@ -453,8 +664,8 @@ struct Camera : Singleton<Camera> {
     float near_z;
     float far_z;
     float aspect_ratio;
-    float current_fov;
-    float unknown_0x10;
+    float fov;
+    float fov_cache;
     u8 height_id;
     u8 padding_0x15[0x20 - 0x15];
     ScePspFVector4 last_position;
@@ -467,7 +678,9 @@ struct Camera : Singleton<Camera> {
     SubCamera subCameras[6];
     u16 buttons;
     u16 rising_edge;
-    u8 padding_0xA74[0xA7A - 0xA74];
+    u16 falling_edge; // unused
+    u16 analog_angle;
+    u16 analog_magnitude;
     bool is_yama_tsukami_quest_clear_0;
     Enemy *demo_enemy;
     u8 next_demo_id;
@@ -477,124 +690,149 @@ struct Camera : Singleton<Camera> {
     u8 unused_0xA89;
     s8 unknown_0xA8A;
     bool is_changing_area;
-    u8 last_cam_sub;
-    u8 current_cam_sub;
+    u8 last_sub_camera_id;
+    u8 area_sub_camera_id;
     CameraAreaCnf *area_cnf;
     u8 area_id;
     CameraRailPoint rail_point;
     u8 padding_0xAA4[0xAA9 - 0xAA4];
     bool enableCameraControls;
     bool zClipping;
-    u8 padding_0xAAB[0xAC0 - 0xAAB];
-    s8 unknown_0xAC0;
-    u8 padding_0xAC1[0xAE0 - 0xAC1];
-    s8 unknown_0xAE0;
-    u8 padding_0xAE1[0xB00 - 0xAE1];
-    s8 unknown_0xB00;
-    u8 padding_0xB01[0xB10 - 0xB01];
-    u32 unknown_0xB10;
-    u8 padding_0xB14[0xB34 - 0xB14];
-    float unknown_0xB34;
+    u8 next_area_id;
+    CameraAreaHeader *area_data;
+    CameraQuake quakes[3];
+    CameraState state;
+    bool is_areas_disabled;
+    u16 area_row;
+    u16 area_col;
+    u8 padding_0xB1A[0xB1C - 0xB1A];
+    u16 area_row_count;
+    u16 area_col_count;
+    s16 unknown_0xB20;
+    s16 unknown_0xB22;
+    s32 unknown_0xB24;
+    s32 unknown_0xB28;
+    s32 unknown_0xB2C;
+    s32 unknown_0xB30;
+    float roll;
     u8 padding_0xB38[0xB3C - 0xB38];
     s8 unknown_0xB3C;
-    u8 padding_0xB3D[0xB70 - 0xB3D];
-    float unknown_0xB70;
-    float unknown_0xB74;
-    u8 padding_0xB78[0xB80 - 0xB78];
-    ScePspFMatrix4 perspective; // unsure
-    ScePspFMatrix4 world;
-    ScePspFMatrix4 projection;
-    u8 padding_0xC40[0xCA0 - 0xC40];
+    u8 padding_0xB3D[0xB40 - 0xB3D];
     ScePspFVector4 position;
-    u8 padding_0xCB0[0xDA0 - 0xCB0];
+    ScePspFVector4 target;
+    ScePspFVector4 up;
+    ScePspFVector2 viewport_offset;
+    ScePspFMatrix4 worldToView;
+    ScePspFMatrix4 nworldToView;
+    ScePspFMatrix4 viewToProjection;
+    ScePspFMatrix4 viewToNworld;
+    ScePspFMatrix4 viewToWorld;
+    ScePspFMatrix4 rview_matY;
+    ScePspFMatrix4 projectionToView;
+    u8 pad_0xD40[16];
+    ScePspFVector4 left_clip_plane;
+    ScePspFVector4 right_clip_plane;
+    ScePspFVector4 top_clip_plane;
+    ScePspFVector4 bottom_clip_plane;
+    float clip_max_z;
+    float clip_min_z;
+    u8 pad_0xD98[8];
     ScePspVector3 viewport_scale;
     ScePspVector3 viewport_center;
-    u8 padding_0xDB8[8];
+    float distance;
+    u8 padding_0xDBC[4];
     float unknown_0xDC0;
-    u8 padding_0xDC4[0xDD0 - 0xDC4];
+    s8 sub_camera_id;
+    u8 padding_0xDC5[0xDD0 - 0xDC5];
 
     Camera();
     ~Camera() {};
 
-    void method_088137C8();
+    void View_initialize();
+    void CameraInit();
+    void View_init();
+    void CameraMove();
+    void quake_sub(CameraQuake *);
+    void set_quake_sub(int, ScePspFVector4 *);
+    void set_quake_sub2(int);
+    void Em_set_quake_sub(int, ObjBase *);
+    void Em_set_quake_sub_W(int, ObjBase *, int);
+    void Pachinger_set_quake_sub(int, ObjBase *);
+    bool Camera_kyu_senkai_chk();
+    void WyvernFindPlayer(Player *);
+    void BBQcamera_set(Player *);
+    void NPCZoomInCameraRequest(Npc *, bool);
+    void BookEditCameraRequest(float, float);
+    void NPCZoomInCameraCancel(bool);
+    bool NPCZoomInCameraCheck();
+    bool NPCZoomInCameraCancelCheck();
+    void LobbyFixCameraRequest(ScePspFVector4 *, ScePspFVector4 *, float *, bool);
+    void NPCZoomInCameraCancel2(bool);
+    void DemoCameraRequest(int, Enemy *, bool);
+    void DemoCameraRequest(int, Enemy *);
+    void QuestClearCameraRequest(bool);
+    void FB_DieCameraRequest();
+    void EnemyEscapeCamera(Enemy *);
+    bool check_clear_camera_disable();
+    void PlayerDieCameraRequest();
+    void PlComebackCameraRequest();
+    void PilebunkerCameraRequest();
+    void FishWyvernCameraRequest(Enemy *enemy);
+    void DemoCameraCancel();
+    s8 DemoCameraCheck();
+    u8 GetDemoCameraID();
+    u8 DemoCameraCheckQC();
+    bool method_08814BE0();
+    s16 GetDemoCameraTimer();
+    bool method_08814C50();
+    bool method_08814CC4();
+    bool PachingerCamChk(Player *player);
+    s8 GetPachingerInfo(u8 *crosshairsOut, u8 *isVariableOut, float *zoomCursorOut);
+    void GetCameraEye(ScePspFVector4 *out);
+    void GetCameraAt(ScePspFVector4 *out);
+    void GetCameraUp(ScePspFVector4 *out);
+    bool player_trnsl_chk(u8 *alphaOut, ObjBase *player);
+    void flmatMakeLookAt(ScePspFVector4 *eye, ScePspFVector4 *at, ScePspFVector4 *up);
+    void flmatrMakeProjection(ScePspFMatrix4 *out, float fov, float aspect, float near, float far);
+    void set_viewproj(float fov, float aspect, float near, float far);
+    void project(ScePspFVector4 *out, ScePspFVector4 *in);
+    u16 Get_view_dir();
+    void StageCamInit();
+    void SetCameraData(CameraAreaHeader *);
+    void default_area_data();
+    void cam2view();
+    void cameraUpdateInput();
+    void set_to_std_cam(int);
+    s8 SetAreaData();
+    u8 CameraAreaCheck(CameraAreaCnf *, u8);
+    u8 Area_XZ_Check(CameraAreaZone *, ScePspFVector4 *);
+    void set_aov();
+    void View_move();
+    void view_set(ScePspFVector4 *, ScePspFVector4 *, float);
+    void view_set_move();
+    void last_view_set(ScePspFVector4 *, ScePspFVector4 *, float);
+    void plMakePlaneFromPoints(ScePspFVector4 *, ScePspFVector4 *, ScePspFVector4 *, ScePspFVector4 *);
+    void plSetupFOVClipPlanes();
+    bool z_clip_check(ScePspFVector4 *, float);
+    int clip_check(ScePspFVector4 *, float);
+    int clip_check(ScePspFVector4 *, float, float);
+    void SetViewport();
 
-    void method_088138DC();
-    void method_0881395C();
-    void method_08813990();
-    void method_08813B78();
-    void method_08813CD8();
-    void method_08813D24();
-    void method_08813D50();
-    void method_08813DE4();
-    void method_08813E84();
-    void method_08813F18();
-    void method_08813F48();
-    void method_08813F78();
-    void method_08813FBC();
-    void method_088140E0();
-    void method_08814148();
-    void method_08814258();
-    void method_08814280();
-    void method_088142A8();
-    void method_08814318();
-    void method_08814320();
-    void method_08814334();
-    void method_08814354();
-    void method_088148F4();
-    void method_088148FC();
-    void method_08814A4C();
-    void method_08814A88();
-    void method_08814AB8();
-    void method_08814B00();
-    void method_08814B5C();
-    void method_08814B6C();
-    void method_08814B98();
-    void method_08814BD0();
-    void method_08814BD8();
-    void method_08814C30();
-    void method_08814CC4();
-    void method_08814E08();
-    void method_08814E40();
-    void get_camera_pos(ScePspFVector4 *);
-    void method_08814EA4();
-    void method_08814EC4();
-    void method_08814ED4();
-    void method_08815028(ScePspFVector4 *, ScePspFVector4 *, ScePspFVector4 *);
-    void method_08815274();
-    void method_08815384();
-    void method_08815434();
-    void method_08815588();
-    void method_08815744();
-    void method_088157D4();
-    void method_088159A0();
-    void method_08815B44();
-    void method_08815BD8();
-    void method_08815DC4();
-    void method_08815DE4();
-    void method_08815EC8();
-    void method_08816020();
-    void method_08816108();
-    void method_08816144();
-    void method_088164C0();
-    void method_08816698();
-    void method_08816724();
-    void method_08816B24();
-    void method_08816B44();
-    void method_08816BE8();
-    void method_08816C5C();
-    void method_08816E20();
-    void method_08816EA8();
-    void method_08816EB0();
-    void method_08817024();
+private:
+    inline void DemoCameraRequest(int demo_id) {
+        DemoCameraRequest(demo_id, NULL, demo_id == DemoId::YAMA_TSUKAMI_QUEST_CLEAR_0);
+    }
+
+    inline void RollView(float roll) {
+        this->roll = roll;
+    }
+
+    inline void SetAngleOfView(float fov) {
+        this->fov = fov;
+    }
+
+    inline int CamAreaAttribChk(CameraAreaCnf *);
 };
 
-extern "C" {
-    // clipping test; objects are clipped when false
-    int func_eboot_08816EA8(Camera *, ScePspFVector4 *position, float clipping_distance);
-    int func_eboot_08816E20(Camera *, ScePspFVector4 *, float);
-    void get_camera_pos(Camera *, ScePspFVector4 *);
-    void func_eboot_088157D4(Camera *, void *);
-}
-
-void Roll2Upvec(ScePspFVector4 *out, ScePspFVector4 *position, ScePspFVector4 *target, float roll);
 void flmatMakeLookAt(ScePspFMatrix4 *out, ScePspFVector4 *position, ScePspFVector4 *target, ScePspFVector4 *up);
+void Roll2Upvec(ScePspFVector4 *out, ScePspFVector4 *position, ScePspFVector4 *target, float roll);

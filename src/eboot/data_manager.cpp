@@ -1,5 +1,6 @@
 #include "data_manager.hpp"
 
+#include "gamestage.hpp"
 #include "quest.hpp"
 #include "resource_manager.hpp"
 #include "singleton.hpp"
@@ -96,7 +97,7 @@ void DataManager::clear_pacs() {
 
 void DataManager::update() {
     if (f0x216_flag) {
-        if (!GameSys::objectPtr->is_gallery) {
+        if (!GameSys::objectPtr->is_gallery_task) {
             if (ready_flag && !loading_flag && allocate_volatile_memory()) {
                 loading_flag = true;
                 clear_pacs_inner();
@@ -202,11 +203,11 @@ inline s32 DataManager::next_pac_index() {
     return 4;
 }
 
-void DataManager::cache_emmodel(u8 em_id) {
+void DataManager::cache_emmodel(u8 em_type) {
     entry* src = &entries[0x16];
     int src_offset = 0;
     for (; src_offset < 4; ++src_offset) {
-        u16 file_id = 0x17AB + em_id;
+        u16 file_id = 0x17AB + em_type;
         if ((src->flags & READY) != 0 && (src->file_id == file_id)) {
             break;
         }
@@ -228,10 +229,10 @@ void DataManager::free(s32 index) {
     e.reset();
 }
 
-u8 *DataManager::emmodel_pac(u8 em_id) {
+u8 *DataManager::emmodel_pac(u8 em_type) {
     entry *e = &entries[9];
     for (int i = 0; i < 4; ++i) {
-        u16 file_id = 0x17AB + em_id;
+        u16 file_id = 0x17AB + em_type;
         if (e->flags & READY && e->file_id == file_id) {
             return e->buffer;
         }
@@ -240,8 +241,8 @@ u8 *DataManager::emmodel_pac(u8 em_id) {
     return 0;
 }
 
-bool DataManager::is_pac_cached(u8 em_id) {
-    return find_pac(em_id + 0x17AB) != -1;
+bool DataManager::is_pac_cached(u8 em_type) {
+    return find_pac(em_type + 0x17AB) != -1;
 }
 
 s32 DataManager::find_pac(u16 file_id) {
@@ -255,10 +256,10 @@ s32 DataManager::find_pac(u16 file_id) {
     return -1;
 }
 
-s8 DataManager::find_emmodel(u8 em_id) {
+s8 DataManager::find_emmodel(u8 em_type) {
     entry *e = &entries[9];
     for (s8 i = 0; i < 4; ++i) {
-        u16 file_id = 0x17AB + em_id;
+        u16 file_id = 0x17AB + em_type;
         if ((e->flags & READY) != 0 && e->file_id == file_id) {
             return i;
         }
@@ -267,15 +268,15 @@ s8 DataManager::find_emmodel(u8 em_id) {
     return -1;
 }
 
-void DataManager::load_emmodel(u8 em_id, u32 size, s32 index) {
+void DataManager::load_emmodel(u8 em_type, u32 size, s32 index) {
     if (index == -1) {
-        if (emmodel_pac(em_id) == 0) {
+        if (emmodel_pac(em_type) == 0) {
             Quest &global = *Singleton<Quest>::objectPtr;
             int target_0_count = global.targets[0].count_0x1e;
             entry *e = &entries[global.largeEnemyCount(target_0_count) + 9];
             for (s32 offset = global.largeEnemyCount(target_0_count); offset < 4; ++offset) {
                 if ((e->flags & (LOADING | READY)) == 0) {
-                    u16 file_id = em_id + 0x17AB;
+                    u16 file_id = em_type + 0x17AB;
                     load(offset + 9, file_id, size);
                     return;
                 }
@@ -285,12 +286,12 @@ void DataManager::load_emmodel(u8 em_id, u32 size, s32 index) {
     } else {
         entry *e = &entries[index + 9];
         if ((e->flags & READY) != 0) {
-            u16 file_id = em_id + 0x17AB;
+            u16 file_id = em_type + 0x17AB;
             if (e->file_id == file_id) {
                 return;
             }
         }
-        u16 file_id = em_id + 0x17AB;
+        u16 file_id = em_type + 0x17AB;
         load(index + 9, file_id, size);
     }
 }
@@ -305,15 +306,15 @@ extern "C" {
     extern struct sound_effect_file_ids D_game_task_09BC3670[90];
 }
 
-void DataManager::load_em_with_sfx(u8 em_id, int n) {
-    load_emmodel(em_id);
-    load(n + 0x1E, D_game_task_09BC3670[em_id].phd_file_id, 0);
-    load(n + 0x22, D_game_task_09BC3670[em_id].bd_file_id, 0);
-    load(n + 0x1A, D_game_task_09BC3670[em_id].tsb_file_id, 0);
+void DataManager::load_em_with_sfx(u8 em_type, int n) {
+    load_emmodel(em_type);
+    load(n + 0x1E, D_game_task_09BC3670[em_type].phd_file_id, 0);
+    load(n + 0x22, D_game_task_09BC3670[em_type].bd_file_id, 0);
+    load(n + 0x1A, D_game_task_09BC3670[em_type].tsb_file_id, 0);
 }
 
-void DataManager::load_emmodel(u8 em_id) {
-    u8 *pac = emmodel_pac(em_id);
+void DataManager::load_emmodel(u8 em_type) {
+    u8 *pac = emmodel_pac(em_type);
     if (pac == 0) {
 
         Quest &global = *Singleton<Quest>::objectPtr;
@@ -322,7 +323,7 @@ void DataManager::load_emmodel(u8 em_id) {
         entry *e = &entries[global.largeEnemyCount(target_0_count) + 0x16];
         for (s32 offset = global.largeEnemyCount(target_0_count); offset < 4; ++offset) {
             if ((e->flags & (LOADING | READY)) == 0) {
-                u16 file_id = em_id + 0x17AB;
+                u16 file_id = em_type + 0x17AB;
                 load(offset + 0x16, file_id, 0);
                 return;
             }
@@ -339,10 +340,10 @@ struct implicit_converter {
     operator u16() { return value; }
 };
 
-void DataManager::free_emmodel(u8 em_id) {
+void DataManager::free_emmodel(u8 em_type) {
     entry *e = &entries[9];
     for (int i = 0; i < 4; ++i) {
-        if ((e->flags & (LOADING | READY)) != 0 && implicit_converter(em_id + 0x17AB) == e->file_id) {
+        if ((e->flags & (LOADING | READY)) != 0 && implicit_converter(em_type + 0x17AB) == e->file_id) {
             free(i + 9);
         }
         ++e;
@@ -415,7 +416,6 @@ extern "C" {
         u16 right;
     };
 
-    extern struct short_pair D_game_sub_09CDF7B8[267];
     extern struct short_pair D_eboot_089A6470[267];
 }
 
@@ -423,11 +423,11 @@ void DataManager::cache_stage(u16 st_id) {
     load(0x15, (u16)(st_id + 0x167C), 0); // st pac
     load(0x29, (u16)(st_id + 0x1572), 0); // st ovl
     func_eboot_088711B8(Quest::objectPtr, st_id);
-    load(0x26, D_game_sub_09CDF7B8[st_id].left, 0);
+    load(0x26, Gamestage::Snd_bgm_tbl[st_id].bgm, 0);
     load(0x27, D_eboot_089A6470[st_id].left, 0);
     load(0x28, D_eboot_089A6470[st_id].right, 0);
 }
 
 bool DataManager::some_test() {
-    return GameSys::objectPtr->unknownTest();
+    return GameSys::objectPtr->background_load_check();
 }

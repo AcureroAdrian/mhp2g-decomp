@@ -1,4 +1,4 @@
-func_eboot_08814BE0 = 0x08814BE0; // type:func
+method_08814BE0__6CameraFv = 0x08814BE0; // type:func
 drawMesh__3pmoFP9HierarchyP3tmhUc = 0x08861714; // type:func
 emit_world_model__FP14ScePspFMatrix4P14ScePspFVector4 = 0x0886234C; // type:func
 next_index__6SystemFUi = 0x0888FDCC; // type:func
@@ -21,7 +21,7 @@ exit_count__9StageBaseFUi = 0x088CD4AC;
 vtable_0x24__9StageBaseFv = 0x088CD614; // type:func
 vtable_0x50__9StageBaseFv = 0x088CD94C; // type:func
 draw_sky_gradient__9StageBaseFv = 0x088CDDBC; // type:func
-method_088DF804__13PlayerManagerFi = 0x088DF804; // type:func
+getPlayerPtr__13PlayerManagerFi = 0x088DF804; // type:func
 __register_global_object = 0x08909D80; // type:func
 __vt__8Stage046 = 0x089BC89C;
 objectPtr__18Singleton<6Camera> = 0x089C6CB4; // filename:D_eboot_089C6CB4

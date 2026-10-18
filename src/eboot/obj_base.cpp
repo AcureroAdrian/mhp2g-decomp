@@ -1,6 +1,7 @@
 #include "obj_base.hpp"
 #include "common.h"
 #include "game_sys.hpp"
+#include "gamestage.hpp"
 #include "model_base.hpp"
 #include "draw_manager.hpp"
 
@@ -114,7 +115,7 @@ void ObjBase::vtable_0x3C() {
     // empty
 }
 
-void ObjBase::method_08865A24() {
+void ObjBase::hit_stop_calc() {
     if (unknown_0x396 != 0) {
         unknown_0x33C += unknown_0x396;
         unknown_0x396 = 0;
@@ -125,7 +126,7 @@ void ObjBase::method_08865A24() {
     }
 }
 
-void ObjBase::method_08865A5C(u32 flag) {
+void ObjBase::pl_flag_set(u32 flag) {
     if ((flag & 0x80000000) == 0) {
         unknown_0x288 |= flag;
     } else {
@@ -133,7 +134,7 @@ void ObjBase::method_08865A5C(u32 flag) {
     }
 }
 
-void ObjBase::method_08865A94(u32 flag) {
+void ObjBase::pl_flag_clr(u32 flag) {
     if ((flag & 0x80000000) == 0) {
         unknown_0x288 &= ~flag;
     } else {
@@ -155,54 +156,43 @@ void ObjBase::method_08865AD4(u16 flags, int a, int b) {
     }
 
     if ((flags & 0x8000) != 0) {
-        method_08865A94(8);
+        pl_flag_clr(8);
     } else {
-        method_08865A5C(8);
+        pl_flag_set(8);
     }
 
     if (a == 0) {
-        method_08865A94(1);
+        pl_flag_clr(1);
     } else {
-        method_08865A5C(1);
+        pl_flag_set(1);
     }
 
     if (b == 0) {
-        method_08865A94(2);
+        pl_flag_clr(2);
     } else {
-        method_08865A5C(2);
+        pl_flag_set(2);
     }
 }
 
-int ObjBase::inLoadedStage() {
+bool ObjBase::Pl_stg_ck() {
     return stageId == GameSys::objectPtr->stage_id;
 }
 
-extern struct StageCoordinateInfo {
-    float xOffset;
-    float zOffset;
-    float xMin; // guess
-    float zMin; // guess
-    float xMax; // guess
-    float zMax; // guess
-    float yMax; // guess
-    float yMin; // guess
-} D_game_sub_09CD9EB0[267];
-
-void ObjBase::updateStagePosition() {
-    StageCoordinateInfo &info = D_game_sub_09CD9EB0[stageId];
-    stagePosition.x = position.x + info.xOffset;
-    stagePosition.y = position.y + (info.yMax + info.yMin) / 2;
-    stagePosition.z = position.z + info.zOffset;
+void ObjBase::World_calc() {
+    StageWorldCoordinate &info = Gamestage::stage_world_tbl[stageId];
+    world_position.x = position.x + info.x_offset;
+    world_position.y = position.y + (info.y_max + info.y_min) / 2;
+    world_position.z = position.z + info.z_offset;
 }
 
-void ObjBase::toStagePosition(ScePspFVector4 *out, u16 stageId, ScePspFVector4 *in) {
-    StageCoordinateInfo &info = D_game_sub_09CD9EB0[stageId];
-    out->x = in->x + info.xOffset;
-    out->y = in->y + (info.yMax + info.yMin) / 2;
-    out->z = in->z + info.zOffset;
+void ObjBase::World_calc2(ScePspFVector4 *out, u16 stageId, ScePspFVector4 *in) {
+    StageWorldCoordinate &info = Gamestage::stage_world_tbl[stageId];
+    out->x = in->x + info.x_offset;
+    out->y = in->y + (info.y_max + info.y_min) / 2;
+    out->z = in->z + info.z_offset;
 }
 
-u32 ObjBase::method_08865C80(u32 flag) {
+u32 ObjBase::pl_flag_ck(u32 flag) {
     if ((flag & 0x80000000) != 0) {
         return unknown_0x28C & (flag & 0x7FFFFFFF);
     } else {
@@ -217,10 +207,10 @@ bool ObjBase::act_ck(u8 type, u8 id) {
     return false;
 }
 
-INCLUDE_ASM("asm/eboot/nonmatchings/obj_base", func_eboot_08865CE4);
+INCLUDE_ASM("asm/eboot/nonmatchings/obj_base", action_timer_calc__7ObjBaseFs);
 
-void ObjBase::method_08865D4C() {
-    unknown_0x27C = D_game_task_09BB3C20[pl_type].unknown_0x54;
+void ObjBase::em_wall_bit_set() {
+    wall_bit = D_game_task_09BB3C20[pl_type].wall_bit;
 }
 
 void ObjBase::method_08865D7C() {
@@ -237,23 +227,18 @@ void ObjBase::vtable_0x34(float *x, float *y) {
     *y = 1;
 }
 
-#if BUILD_NONMATCHING
-
-int ObjBase::method_08865DCC(s16 x) {
-    float f = -1 * unknown_0x244;
+int ObjBase::rate_g_calc(s16 x) {
+    float ay, vy = velocity.y;
+    ay = vy * -1.0f;
     x /= 2;
-    if (x <= 1 || f < 0) {
-        unknown_0x254 = f;
+    if (x <= 1 || vy < 0) {
+        acceleration.y = ay;
         return 0;
     } else {
-        unknown_0x254 = f / x;
+        acceleration.y = ay / x;
         return 1;
     }
 }
-
-#else
-INCLUDE_ASM("asm/eboot/nonmatchings/obj_base", method_08865DCC__7ObjBaseFs);
-#endif
 
 INCLUDE_ASM("asm/eboot/nonmatchings/obj_base", func_eboot_08865E38);
 

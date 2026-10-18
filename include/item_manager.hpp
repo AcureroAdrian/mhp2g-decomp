@@ -194,6 +194,8 @@ struct MixQuantity {
     u8 percents[3];
 };
 
+struct UserData;
+
 struct ItemManager : Singleton<ItemManager> {
     void setBagItem(u16 itemId);
     u16 bagAdd(u16 itemId, s16 addend);

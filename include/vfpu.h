@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "psptypes.h"
 
 #if !defined(__MWERKS__)
 extern "C" {
@@ -40,6 +41,27 @@ inline void flvecApplyMat33(ScePspFVector4 *v, ScePspFVector4 *p, ScePspFMatrix4
     v->y = m->y.x * p->x + m->y.y * p->y + m->y.z * p->z;
     v->z = m->z.x * p->x + m->z.y * p->y + m->z.z * p->z;
     v->w = p->w;
+#endif
+}
+
+inline void vtfm4_q(ScePspFVector4 *y, ScePspFVector4 *x, ScePspFMatrix4 *m) {
+#if defined(__MWERKS__)
+    __asm__ (
+        "lv.q C100, %1"
+        "lv.q C200, 0x0(%2)"
+        "lv.q C210, 0x10(%2)"
+        "lv.q C220, 0x20(%2)"
+        "lv.q C230, 0x30(%2)"
+        "vtfm4.q C000, E200, C100"
+        "sv.q C000, %0"
+        : "=m" (*y)
+        : "m" (*x), "m" (*m)
+    );
+#else
+    y->x = m->x.x * x->x + m->x.y * x->y + m->x.z * x->z + m->x.w * x->w;
+    y->y = m->y.x * x->x + m->y.y * x->y + m->y.z * x->z + m->y.w * x->w;
+    y->z = m->z.x * x->x + m->z.y * x->y + m->z.z * x->z + m->z.w * x->w;
+    y->w = m->w.x * x->x + m->w.y * x->y + m->w.z * x->z + m->w.w * x->w;
 #endif
 }
 
@@ -205,6 +227,19 @@ inline void vmidt_q(ScePspFMatrix4 *m) {
     m->y.x = 0; m->y.y = 1; m->y.z = 0; m->y.w = 0;
     m->z.x = 0; m->z.y = 0; m->z.z = 1; m->z.w = 0;
     m->w.x = 0; m->w.y = 0; m->w.z = 0; m->w.w = 1;
+#endif
+}
+
+
+inline void vzero_q(ScePspFVector4 *v) {
+#if defined(__MWERKS__)
+    __asm__ (
+        "vzero.q C000"
+        "sv.q C000, 0x0(%0)"
+        : "=m" (*v)
+    );
+#else
+    v->x = v->y = v->z = v->w = 0;
 #endif
 }
 
@@ -454,6 +489,39 @@ inline void normalize(ScePspFVector4 *out, ScePspFVector4 *v) {
 #endif
 }
 
+inline void normalize3(ScePspFVector4 *out, ScePspFVector4 *v) {
+#if defined(__MWERKS__)
+    __asm__ (
+        "lv.q C000, %1"
+        "vdot.t S010, C000, C000"
+        "vzero.s S011"
+        "vcmp.s EZ, S010, S010"
+        "nop"
+        "vrsq.s S010, S010"
+        "vcmovt.s S010, S011, 0"     // S010 <- v^2 == 0 ? 0 : 1/sqrt(v^2)
+        "vpfxd 0xFF"                 // clamp to interval -1.0 to +1.0
+        "vscl.t C000, C000, S010"
+        "sv.q C000, %0"
+        : "=m"(*out)
+        : "m"(*v)
+    );
+#else
+    float f = v->x * v->x + v->y * v->y + v->z * v->z;
+    if (f == 0.0f) {
+        out->x = out->y = out->z = out->w = 0.0f;
+    }
+    f = 1.0f / sqrtf(f);
+    out->x = v->x * f;
+    out->y = v->y * f;
+    out->z = v->z * f;
+    out->w = v->w;
+#endif
+}
+
+inline void normalize3_2(ScePspFVector4 *v) {
+    normalize3(v, v);
+}
+
 inline float vabs_s(float x) {
     float result;
 #if defined(__MWERKS__)
@@ -482,6 +550,24 @@ inline float vsqrt_s(float x) {
     );
 #else
     result = sqrtf(x);
+#endif
+    return result;
+}
+
+inline float vcos_s(float radians) {
+    float result;
+#if defined(__MWERKS__)
+    __asm__ (
+        "lv.s S000, %1"
+        "vcst.s S001, VFPU_2_PI"
+        "vmul.s S000, S000, S001"
+        "vcos.s S010, S000"
+        "sv.s S010, %0"
+        : "=m"(result)
+        : "m"(radians)
+    );
+#else
+    result = cosf(radians);
 #endif
     return result;
 }
@@ -1032,6 +1118,27 @@ inline float flvecInnerProduct(ScePspFVector4 *a, ScePspFVector4 *b) {
     return result;
 }
 
+inline float flvecInnerProduct3(ScePspFVector3 *a, ScePspFVector3 *b) {
+    float result;
+#if defined (__MWERKS__)
+    __asm__ (
+        "lv.s S000, 0x0(%1)"
+        "lv.s S001, 0x4(%1)"
+        "lv.s S002, 0x8(%1)"
+        "lv.s S010, 0x0(%2)"
+        "lv.s S011, 0x4(%2)"
+        "lv.s S012, 0x8(%2)"
+        "vdot.t S100, C000, C010"
+        "sv.s S100, %0"
+        : "=m"(result)
+        : "m"(*a), "m"(*b)
+    );
+#else
+    result = a->x * b->x + a->y * b->y + a->z * b->z;
+#endif
+    return result;
+}
+
 inline void flmatInvert(ScePspFMatrix4 *out, ScePspFMatrix4 *in) {
 #if defined (__MWERKS__)
     __asm__ (
@@ -1157,6 +1264,34 @@ inline float CalcDistanceXZ(ScePspFVector4 *p, ScePspFVector4 *q) {
 
 inline s16 AarcTan2(float y, float x) {
     return flArcTan2(y, x) * (float)(32768 / PI);
+}
+
+inline void flmatSetXYZ33(ScePspFMatrix4 *out, float tilt, float pan, float roll) {
+    flmatInit(out);
+    rotateX(out, tilt);
+    rotateY(out, pan);
+    rotateZ(out, roll);
+}
+
+inline void transpose_q(ScePspFMatrix4 *m) {
+#if defined(__MWERKS__)
+    __asm__ (
+        "lv.q C000, 0x0(%0)"
+        "lv.q C010, 0x10(%0)"
+        "lv.q C020, 0x20(%0)"
+        "lv.q C030, 0x30(%0)"
+        "sv.q R000, 0x0(%0)"
+        "sv.q R001, 0x10(%0)"
+        "sv.q R002, 0x20(%0)"
+        "sv.q R003, 0x30(%0)"
+        : "=m" (*m)
+    );
+#else
+    m->x.x = m->x.x; m->x.y = m->y.x; m->x.z = m->z.x; m->x.w = m->w.x;
+    m->y.x = m->x.y; m->y.y = m->y.y; m->y.z = m->z.y; m->y.w = m->w.y;
+    m->z.x = m->x.z; m->z.y = m->y.z; m->z.z = m->z.z; m->z.w = m->w.z;
+    m->w.x = m->x.w; m->w.y = m->y.w; m->w.z = m->z.w; m->w.w = m->w.w;
+#endif
 }
 
 #ifdef __cplusplus

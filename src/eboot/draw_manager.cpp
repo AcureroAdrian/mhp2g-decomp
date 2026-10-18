@@ -22,26 +22,26 @@ float D_eboot_089C70E4;
 float D_eboot_089C70E8;
 
 DrawManager::DrawManager() {
-    z_index_buckets[render_group::GROUP_0] = NULL;
-    z_index_buckets[render_group::RESET] = NULL;
-    z_index_buckets[render_group::GROUP_2] = &z_index[0];
-    z_index_buckets[render_group::STAGE] = &z_index[1];
-    z_index_buckets[render_group::GROUP_4] = &z_index[2];
-    z_index_buckets[render_group::GROUP_5] = &z_index[3];
-    z_index_buckets[render_group::GROUP_6] = &z_index[35];
-    z_index_buckets[render_group::GROUP_7] = &z_index[43];
-    z_index_buckets[render_group::GROUP_8] = &z_index[107];
-    z_index_buckets[render_group::GROUP_9] = &z_index[108];
-    z_index_buckets[render_group::GROUP_10] = NULL;
-    z_index_buckets[render_group::GROUP_11] = NULL;
-    z_index_buckets[render_group::GROUP_12] = NULL;
-    z_index_buckets[render_group::GROUP_13] = NULL;
-    z_index_buckets[render_group::GROUP_14] = NULL;
-    z_index_buckets[render_group::GROUP_15] = NULL;
-    z_index_buckets[render_group::GROUP_16] = &z_index[109];
-    z_index_buckets[render_group::GROUP_17] = NULL;
-    z_index_buckets[render_group::GROUP_18] = &z_index[110];
-    z_index_buckets[render_group::GROUP_19] = NULL;
+    z_index_buckets[RenderGroup::GROUP_0] = NULL;
+    z_index_buckets[RenderGroup::RESET] = NULL;
+    z_index_buckets[RenderGroup::GROUP_2] = &z_index[0];
+    z_index_buckets[RenderGroup::STAGE] = &z_index[1];
+    z_index_buckets[RenderGroup::GROUP_4] = &z_index[2];
+    z_index_buckets[RenderGroup::GROUP_5] = &z_index[3];
+    z_index_buckets[RenderGroup::GROUP_6] = &z_index[35];
+    z_index_buckets[RenderGroup::GROUP_7] = &z_index[43];
+    z_index_buckets[RenderGroup::GROUP_8] = &z_index[107];
+    z_index_buckets[RenderGroup::GROUP_9] = &z_index[108];
+    z_index_buckets[RenderGroup::GROUP_10] = NULL;
+    z_index_buckets[RenderGroup::GROUP_11] = NULL;
+    z_index_buckets[RenderGroup::GROUP_12] = NULL;
+    z_index_buckets[RenderGroup::GROUP_13] = NULL;
+    z_index_buckets[RenderGroup::GROUP_14] = NULL;
+    z_index_buckets[RenderGroup::GROUP_15] = NULL;
+    z_index_buckets[RenderGroup::GROUP_16] = &z_index[109];
+    z_index_buckets[RenderGroup::GROUP_17] = NULL;
+    z_index_buckets[RenderGroup::GROUP_18] = &z_index[110];
+    z_index_buckets[RenderGroup::GROUP_19] = NULL;
     writing = 0;
     DRAWABLE_WRITE_HEAD = NULL;
     fragment_start = NULL;
@@ -54,7 +54,7 @@ DrawManager::~DrawManager() {
 
 void DrawManager::reset() {
     clear();
-    if (start_fragment(render_group::RESET)) {
+    if (start_fragment(RenderGroup::RESET)) {
         Camera *camera = Camera::objectPtr;
         ge::viewportscale(camera->viewport_scale);
         ge::viewportcenter(camera->viewport_center);
@@ -125,21 +125,21 @@ void DrawManager::reset() {
     }
 }
 
-s8 z_index_bucket_length[render_group::GROUP_COUNT] = {
-    [render_group::GROUP_2] = 1,
-    [render_group::STAGE] = 1,
-    [render_group::GROUP_4] = 1,
-    [render_group::GROUP_5] = 32,
-    [render_group::GROUP_6] = 8,
-    [render_group::GROUP_7] = 64,
-    [render_group::GROUP_8] = 1,
-    [render_group::GROUP_9] = 1,
-    [render_group::GROUP_16] = 1,
-    [render_group::GROUP_18] = 1,
+s8 z_index_bucket_length[RenderGroup::GROUP_COUNT] = {
+    [RenderGroup::GROUP_2] = 1,
+    [RenderGroup::STAGE] = 1,
+    [RenderGroup::GROUP_4] = 1,
+    [RenderGroup::GROUP_5] = 32,
+    [RenderGroup::GROUP_6] = 8,
+    [RenderGroup::GROUP_7] = 64,
+    [RenderGroup::GROUP_8] = 1,
+    [RenderGroup::GROUP_9] = 1,
+    [RenderGroup::GROUP_16] = 1,
+    [RenderGroup::GROUP_18] = 1,
 };
 
 void DrawManager::clear() {
-    for (int i = 0; i < render_group::GROUP_COUNT; ++i) {
+    for (int i = 0; i < RenderGroup::GROUP_COUNT; ++i) {
         for (int j = 0; j < z_index_bucket_length[i]; ++j) {
             z_index_buckets[i][j] = 0;
         }
@@ -147,13 +147,13 @@ void DrawManager::clear() {
 }
 
 void DrawManager::draw() {
-    for (int i = 0; i < render_group::GROUP_COUNT; ++i) {
+    for (int i = 0; i < RenderGroup::GROUP_COUNT; ++i) {
         if (start_fragment(i)) {
             if (i == 1) {
                 ScePspFMatrix4 m;
                 vmidt_q(&m);
                 ge::view(&m);
-                ge::projection(&Camera::objectPtr->projection);
+                ge::projection(&Camera::objectPtr->viewToProjection);
             }
 
             for (int j = 0; j < z_index_bucket_length[i]; ++j) {
@@ -208,7 +208,7 @@ bool DrawManager::vram_transfer() {
 }
 
 void DrawManager::initialize() {
-    if (start_fragment(render_group::RESET)) {
+    if (start_fragment(RenderGroup::RESET)) {
         ge::ztestenable(true);
         ge::ztest(GE_OP_AT_MOST);
 
@@ -235,7 +235,7 @@ void DrawManager::initialize() {
         end_fragment();
     }
 
-    if (start_fragment(render_group::GROUP_2)) {
+    if (start_fragment(RenderGroup::GROUP_2)) {
         ge::atest(0xFF, 0x40, GE_OP_AT_LEAST);
         ge::alphablendenable(true);
         ge::blendmode(GE_BLENDMODE_MUL_AND_ADD, GE_SRCBLEND_SRCALPHA, GE_DSTBLEND_INVSRCALPHA);
@@ -245,7 +245,7 @@ void DrawManager::initialize() {
         end_fragment();
     }
 
-    if (start_fragment(render_group::GROUP_5)) {
+    if (start_fragment(RenderGroup::GROUP_5)) {
         ge::atest(0xFF, 0xC0, GE_OP_AT_LEAST);
         ge::alphablendenable(false);
         ge::lightingenable(true);
@@ -253,7 +253,7 @@ void DrawManager::initialize() {
         end_fragment();
     }
 
-    if (start_fragment(render_group::GROUP_6)) {
+    if (start_fragment(RenderGroup::GROUP_6)) {
         ge::atest(0xFF, 0x80, GE_OP_AT_LEAST);
         ge::alphablendenable(true);
         ge::blendmode(GE_BLENDMODE_MUL_AND_ADD, GE_SRCBLEND_SRCALPHA, GE_DSTBLEND_INVSRCALPHA);
@@ -263,7 +263,7 @@ void DrawManager::initialize() {
         end_fragment();
     }
 
-    if (start_fragment(render_group::GROUP_18)) {
+    if (start_fragment(RenderGroup::GROUP_18)) {
         ge::ztestenable(true);
         ge::ztest(GE_OP_AT_MOST);
 
@@ -369,13 +369,13 @@ int DrawManager::addObj(u8 group, ObjBase *character, bool no_culling) {
             ScePspFVector4 position;
             sv_q(&position, x, y, z, 0);
 
-            result = func_eboot_08816EA8(Camera::objectPtr, &position, s * character->model_pmo.header->clipping_distance);
+            result = Camera::objectPtr->clip_check(&position, s * character->model_pmo.header->clipping_distance);
             if ((u8)result == false) {
                 break;
             }
         }
-        if (character->alpha != 0xFF && group == render_group::GROUP_5) {
-            group = render_group::GROUP_7;
+        if (character->alpha != 0xFF && group == RenderGroup::GROUP_5) {
+            group = RenderGroup::GROUP_7;
         }
         result = add(group, (Draw*)character, &character->position, no_culling);
         if ((u8)result == true) {
@@ -389,7 +389,7 @@ int DrawManager::add(u8 group, ModelBase *model, bool no_culling) {
     int result;
     model->flags &= ~Draw::VISIBLE;
     if (no_culling != false ||
-        (result = func_eboot_08816EA8(Camera::objectPtr, &model->transform.w, model->model_pmo.header->clipping_distance), (u8)result != false)) {
+        (result = Camera::objectPtr->clip_check(&model->transform.w, model->model_pmo.header->clipping_distance), (u8)result != false)) {
         result = add(group, model, &model->transform.w, no_culling);
         if ((u8)result == true) {
             model->flags |= Draw::VISIBLE;
@@ -403,16 +403,16 @@ inline Draw **DrawManager::head(u8 group, int index) {
 }
 
 int DrawManager::add(u8 group, Draw *object, ScePspFVector4 *position, bool no_culling) {
-    if (0 > group || group >= render_group::GROUP_COUNT) {
+    if (0 > group || group >= RenderGroup::GROUP_COUNT) {
         return false;
     }
     object->next = NULL;
 
     float zindex =
-        position->x * Camera::objectPtr->perspective.x.z +
-        position->y * Camera::objectPtr->perspective.y.z +
-        position->z * Camera::objectPtr->perspective.z.z +
-                      Camera::objectPtr->perspective.w.z ;
+        position->x * Camera::objectPtr->worldToView.x.z +
+        position->y * Camera::objectPtr->worldToView.y.z +
+        position->z * Camera::objectPtr->worldToView.z.z +
+                      Camera::objectPtr->worldToView.w.z ;
     zindex *= -1;
     if (zindex < 0.0f) {
         if (no_culling == true) {
@@ -433,7 +433,7 @@ int DrawManager::add(u8 group, Draw *object, ScePspFVector4 *position, bool no_c
     }
 
     Draw *next = *head(group, index);
-    if (group == render_group::GROUP_7) {
+    if (group == RenderGroup::GROUP_7) {
         Draw *cur = next;
         Draw *prev = NULL;
         if (cur != NULL) {
@@ -480,7 +480,7 @@ void DrawManager::world_model(ScePspFMatrix4 *transform) {
     float norm = Ge::objectPtr->norm;
     scaleMatrix(&m, norm, norm, norm);
     vmmul_q(&m, transform, &m);
-    vmmul_q(&m, &m, &Camera::objectPtr->world);
+    vmmul_q(&m, &m, &Camera::objectPtr->nworldToView);
 
     ge::world(&m);
 

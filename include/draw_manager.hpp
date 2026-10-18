@@ -9,7 +9,7 @@ extern u32 *DRAWABLE_WRITE_HEAD;
 
 struct DrawManager : Singleton<DrawManager> {
     Draw *z_index[111]; // 111 == sum(z_index_bucket_length)
-    Draw **z_index_buckets[render_group::GROUP_COUNT];
+    Draw **z_index_buckets[RenderGroup::GROUP_COUNT];
     u8 writing;
     u8 fragment_group;
     u32 *fragment_start;

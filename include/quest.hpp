@@ -1,7 +1,39 @@
 #pragma once
 
 #include "common.h"
+#include "enemy.hpp"
 #include "singleton.hpp"
+
+struct MissionFlag {
+    enum {
+        SLAYING = 1 << 0,
+        GATHERING = 1 << 1,
+        HUNTING = 1 << 2,
+        SPECIAL = 1 << 3,
+        TREASURE = 1 << 4,
+
+        REPEL = 1 << 7,
+
+        UNK_SHAKALAKA_0x800 = 1 << 11,
+
+        UNK_0x4000 = 1 << 14,
+
+        FORTRESS_DEFENSE = 1 << 18,
+        PAW_PASS = 1 << 19,
+
+        MARATHON = 1 << 21,
+        EPIC_HUNTING = 1 << 22,
+        TUTORIAL = 1 << 23,
+        TRAINING = 1 << 24,
+        URGENT = 1 << 25,
+        KEY = 1 << 26,
+
+        G_RANK = 1 << 29,
+        UNK_G_RANK_0x40000000 = 1 << 30,
+    };
+private:
+    MissionFlag();
+};
 
 struct ResourceNodeType {
     enum {
@@ -32,7 +64,12 @@ struct QuestTarget {
 };
 
 struct Quest : Singleton<Quest> {
-    u8 pad_0x0[0x768];
+    u8 pad_0x0[0x24];
+    Enemy *camera_enemy;
+    u32 mission_flags;
+    u8 pad_0x2C[0x720 - 0x2C];
+    Enemy *boss;
+    u8 pad_0x724[0x768 - 0x724];
     QuestTarget targets[2];
     u8 pad_0x7C0[0x8A8 - 0x7C0];
 

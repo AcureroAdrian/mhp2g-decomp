@@ -2,6 +2,7 @@
 
 #include "camera.hpp"
 #include "game_sys.hpp"
+#include "gamestage.hpp"
 #include "hit_manager.hpp"
 #include "sound.hpp"
 #include "singleton.hpp"
@@ -61,7 +62,7 @@ void StageManager::call_stage_ptmf_0x3D8() {
 
 void StageManager::register_drawable() {
     if (stage != 0 && stage->model_pmo.header != 0) {
-        DrawManager::objectPtr->add(render_group::STAGE, stage, true);
+        DrawManager::objectPtr->add(RenderGroup::STAGE, stage, true);
     }
 }
 
@@ -785,8 +786,8 @@ void StageManager::compile_pac(pac_header *pac, bool load_all) {
     }
 
     if (load_all == true) {
-        void *unknown_data_4 = pac->data(4);
-        func_eboot_088157D4(Camera::objectPtr, unknown_data_4);
+        CameraAreaHeader *areaData = (CameraAreaHeader *)pac->data(4);
+        Camera::objectPtr->SetCameraData(areaData);
 
         void *unknown_data_5 = pac->data(5);
         if (unknown_data_5 != 0) {
@@ -852,17 +853,9 @@ void StageManager::free(StageEffectBase *prop) {
     cache.free(prop);
 }
 
-extern "C" {
-    struct MapStageIds {
-        s32 count;
-        u16 *stage_ids;
-    };
-    extern MapStageIds D_game_sub_09CDF678[0x20];
-}
-
 u16 StageManager::find_map_stage_index(int map_id, u16 stage_id) {
-    for (int i = 0; i < D_game_sub_09CDF678[map_id].count; ++i) {
-        if (stage_id == D_game_sub_09CDF678[map_id].stage_ids[i]) {
+    for (int i = 0; i < Gamestage::map_stage_tbl[map_id].length; ++i) {
+        if (stage_id == Gamestage::map_stage_tbl[map_id].stages[i]) {
             return i;
         }
     }
@@ -914,7 +907,7 @@ stage_exit *StageManager::intersecting_exit(ScePspFVector4 *position) {
 u16 StageManager::nearest_exit_destination_stage_id(u16 ignored, ScePspFVector4 *position) {
     stage_exit *exit = stage_exits();
     if (exit == 0) {
-        return D_game_sub_09CDF678[map_id].stage_ids[0];
+        return Gamestage::map_stage_tbl[map_id].stages[0];
     }
     float min = 1.0e10f;
     u16 result = 0;
@@ -990,10 +983,10 @@ u8 StageManager::get_flag_0xA3E8() {
 }
 
 u8 StageManager::find_map_stage_index(u16 stage_id) {
-    int mapId = GameSys::objectPtr->mapId;
-    MapStageIds &m = D_game_sub_09CDF678[mapId];
-    for (int i = 0; i < m.count; ++i) {
-        if (stage_id == m.stage_ids[i]) {
+    int mapId = GameSys::objectPtr->map_id;
+    MapStageList &m = Gamestage::map_stage_tbl[mapId];
+    for (int i = 0; i < m.length; ++i) {
+        if (stage_id == m.stages[i]) {
             return i;
         }
     }
@@ -1001,7 +994,7 @@ u8 StageManager::find_map_stage_index(u16 stage_id) {
 }
 
 u16 StageManager::map_stage_id(u8 map_stage_index) {
-    int mapId = GameSys::objectPtr->mapId;
-    MapStageIds &m = D_game_sub_09CDF678[mapId];
-    return m.stage_ids[map_stage_index];
+    int mapId = GameSys::objectPtr->map_id;
+    MapStageList &m = Gamestage::map_stage_tbl[mapId];
+    return m.stages[map_stage_index];
 }

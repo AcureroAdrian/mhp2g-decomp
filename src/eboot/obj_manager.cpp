@@ -87,7 +87,7 @@ void ObjManager::registerObjDraw(int index) {
     while (objPtr) {
         if ((bool)(objPtr->flags & Draw::ALIVE) == true) {
             if ((bool)(objPtr->flags & Draw::REGISTERED) == false) {
-                DrawManager::objectPtr->addObj(render_group::GROUP_5, objPtr, false);
+                DrawManager::objectPtr->addObj(RenderGroup::GROUP_5, objPtr, false);
             }
         }
         objPtr = objPtr->nextObj;
